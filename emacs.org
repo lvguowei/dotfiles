@@ -20,6 +20,54 @@
              '(font . "Source Code Pro-15"))
  #+end_src
 
+* Themes
+** Cyberpunk theme
+#+BEGIN_SRC emacs-lisp
+(use-package cyberpunk-theme
+  :if (window-system)
+  :ensure t
+  :init
+  (load-theme 'cyberpunk t))
+#+END_SRC
+
+** Solarized theme
+#+begin_src emacs-lisp
+(use-package solarized-theme
+  :defer 10
+  :ensure t)
+#+end_src
+
+** Monokai theme
+#+begin_src emacs-lisp :tangle no
+(use-package monokai-theme
+  :if (window-system)
+  :ensure t)
+#+end_src
+
+** Convenient theme functions
+
+#+begin_src emacs-lisp
+(defun switch-theme (theme)
+  "Disables any currently active themes and loads THEME."
+  ;; This interactive call is taken from `load-theme'
+  (interactive
+   (list
+    (intern (completing-read "Load custom theme: "
+                             (mapc 'symbol-name
+                                   (custom-available-themes))))))
+  (let ((enabled-themes custom-enabled-themes))
+    (mapc #'disable-theme custom-enabled-themes)
+    (load-theme theme t)))
+
+(defun disable-active-themes ()
+  "Disables any currently active themes listed in `custom-enabled-themes'."
+  (interactive)
+  (mapc #'disable-theme custom-enabled-themes))
+
+(bind-key "<f12>" 'switch-theme)
+(bind-key "<f11>" 'disable-active-themes)
+#+end_src
+
 * Sane defaults
 ** Splash Screen
 #+begin_src emacs-lisp
@@ -163,10 +211,10 @@ point reaches the beginning or end of the buffer, stop there."
           (use-package helm-projectile
             :ensure t
             :bind ("C-c p h" . helm-projectile)
+	    :init
+	    (helm-projectile-on)
 	    :config
-	    (progn
-	      (helm-projectile-on)
-	      (setq projectile-indexing-method 'alien)))
+	    (setq projectile-indexing-method 'alien))
           (use-package helm-ag :defer 10  :ensure t))
   :config
   (helm-autoresize-mode t)
@@ -364,34 +412,38 @@ point reaches the beginning or end of the buffer, stop there."
 (use-package paredit
   :ensure t)
 #+END_SRC
+** Flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :config
+  (progn
+    (setq flycheck-html-tidy-executable "tidy5")
+    (add-hook 'after-init-hook #'global-flycheck-mode)))
+#+END_SRC
+
 ** Clojure Mode
  #+begin_src emacs-lisp
-(use-package flycheck-pos-tip
+(use-package clojure-mode-extra-font-locking
   :ensure t)
 
 (use-package clojure-mode
   :ensure t
-  :init
-  (progn
-    (use-package clojure-mode-extra-font-locking
-      :ensure t)
-    (use-package flycheck-clojure
-      :ensure t))
   :config
   (progn
     (add-hook 'clojure-mode-hook 'enable-paredit-mode)
     (add-hook 'clojure-mode-hook 'subword-mode)
     (add-hook 'clojure-mode-hook
-          (lambda ()
-            (setq inferior-lisp-program "lein repl")
-            (font-lock-add-keywords
-             nil
-             '(("(\\(facts?\\)"
-                (1 font-lock-keyword-face))
-               ("(\\(background?\\)"
-                (1 font-lock-keyword-face))))
-            (define-clojure-indent (fact 1))
-            (define-clojure-indent (facts 1))))))
+      (lambda ()
+        (setq inferior-lisp-program "lein repl")
+        (font-lock-add-keywords
+          nil
+          '(("(\\(facts?\\)"
+          (1 font-lock-keyword-face))
+          ("(\\(background?\\)"
+          (1 font-lock-keyword-face))))
+          (define-clojure-indent (fact 1))
+          (define-clojure-indent (facts 1))))))
 
 (defun clojure/fancify-symbols (mode)
   "Pretty symbols for Clojure's anonymous functions and sets,
@@ -447,7 +499,6 @@ point reaches the beginning or end of the buffer, stop there."
     ;(add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
     (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))))
 
-
 ;; clojure refactor
 (use-package clj-refactor
   :ensure t)
@@ -455,16 +506,6 @@ point reaches the beginning or end of the buffer, stop there."
 ;; org babel settings
 (require 'ob-clojure)
 (setq org-babel-clojure-backend 'cider)
-
-;; squiggly-clojure
-(eval-after-load 'flycheck '(flycheck-clojure-setup))
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
-(with-eval-after-load 'flycheck
-  (flycheck-pos-tip-mode))
-
-(eval-after-load 'flycheck
-  '(setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
 ;; compojure indentation
 (define-clojure-indent
@@ -478,6 +519,9 @@ point reaches the beginning or end of the buffer, stop there."
   (context 2))
 
  #+end_src
+
+ #+RESULTS:
+ : 2
 
 ** Avy configuration
 #+begin_src emacs-lisp
@@ -525,14 +569,6 @@ point reaches the beginning or end of the buffer, stop there."
 (setq slime-contribs '(slime-fancy))
 #+end_src
 
-
-** Flycheck
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :config (setq flycheck-html-tidy-executable "tidy5"))
-#+END_SRC
-
 ** Multiple Cursors
 #+begin_src emacs-lisp
 (use-package multiple-cursors
@@ -560,3 +596,11 @@ point reaches the beginning or end of the buffer, stop there."
   :ensure t)
 #+END_SRC
   
+** Recentf
+#+BEGIN_SRC emacs-lisp
+(use-package recentf
+  :bind ("C-x C-r" . helm-recentf)
+  :config
+  (recentf-mode t)
+  (setq recentf-max-saved-items 200))
+#+END_SRC
