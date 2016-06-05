@@ -1,9 +1,10 @@
-#+TITLE Guowei Lv's Emacs Configuration
+#+TITLE: Guowei Lv's Emacs Configuration
+#+AUTHOR: Guowei Lv
 
 * User details
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Guowei Lv")
-(setq user-mail-address "lvguowei1002@gmail.com")
+(setq user-full-name "Guowei Lv"
+      user-mail-address "lvguowei1002@gmail.com")
 #+END_SRC
 
 * Environment
@@ -13,128 +14,13 @@
 (require 'cl)
 #+end_src
 
-* Package Management
-#+begin_src emacs-lisp
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-#+end_src
+* Font
+ #+begin_src emacs-lisp
+(add-to-list 'default-frame-alist
+             '(font . "Source Code Pro-15"))
+ #+end_src
 
-** Define default packages
-This is the list of packages used in this configuration.
-#+begin_src emacs-lisp
-(defvar guowei/packages '(restclient-test
-                          edbi
-                          multiple-cursors
-                          company-flx
-                          flycheck-clojure
-                          flycheck-pos-tip
-                          rtags
-                          auto-complete-clang
-                          cmake-ide
-                          flycheck-irony
-                          company-irony-c-headers
-                          company-irony
-			  irony
-                          flycheck
-			  zenburn-theme
-			  monokai-theme
-			  alect-themes
-			  color-theme-modern
-			  base16-theme
-			  grandshell-theme
-			  atom-one-dark-theme
-			  idea-darkula-theme
-			  4clojure
-			  avy
-			  spacegray-theme
-			  ample-theme
-			  ample-zen-theme
-			  ace-window
-			  auctex
-			  atom-dark-theme
-			  buffer-move
-			  bbdb
-			  company
-			  cyberpunk-theme
-			  dired+
-			  dash
-			  deft
-			  eyebrowse
-			  emms
-			  emms-player-mpv-jp-radios
-			  flx
-			  flx-ido
-			  flymake-google-cpplint
-			  flymake-cursor
-			  google-translate
-			  smex
-			  org
-			  org-plus-contrib
-			  org-beautify-theme
-			  abyss-theme
-			  org-present
-			  org-bullets
-			  org2blog
-			  paren
-			  markdown-mode
-			  markdown-mode+
-			  projectile
-			  org-present
-			  expand-region
-			  paredit
-			  powerline
-			  undo-tree
-			  helm
-			  helm-gtags
-			  helm-projectile
-			  htmlize
-			  nyan-mode
-			  nyan-prompt
-			  mu4e-alert
-			  auto-complete
-			  auto-complete-c-headers
-			  yasnippet
-			  iedit
-			  restclient
-			  ace-window
-			  moe-theme
-			  neotree
-			  spacemacs-theme
-			  multi-term
-			  magit
-			  material-theme
-			  yaml-mode
-			  seti-theme
-			  scss-mode
-			  cider
-			  clojure-mode
-			  clj-refactor
-			  clojure-mode-extra-font-locking
-			  soundklaus
-			  rainbow-delimiters
-			  afternoon-theme
-			  solarized-theme) "Default Packages")
-#+end_src
-
-#+RESULTS:
-: guowei/packages
-
-** Install default packages
-#+begin_src emacs-lisp
-(defun guowei/packages-installed-p ()
-  (loop for pkg in guowei/packages
-        when (not (package-installed-p pkg)) do (return nil)
-        finally (return t)))
-
-(unless (guowei/packages-installed-p)
-  (message "%s" "Refreshing package database...")
-  (package-refresh-contents)
-  (dolist (pkg guowei/packages)
-    (when (not (package-installed-p pkg))
-      (package-install pkg))))
-#+end_src
-
-* Start-up options
+* Sane defaults
 ** Splash Screen
 #+begin_src emacs-lisp
 (setq inhibit-splash-screen t
@@ -154,30 +40,21 @@ This is the list of packages used in this configuration.
 (setq x-select-enable-clipboard t)
 #+end_src
 
-** Display Settings
+** Better Parenthesis
 #+begin_src emacs-lisp
-(when window-system
-  (setq frame-title-format '(buffer-file-name "%f" ("%b")))
-  (set-face-attribute 'default nil
-                      :family "Input Mono"
-                      :height 140
-                      :weight 'normal
-                      :width 'normal)
+(electric-pair-mode 1)
+;; make electric-pair-mode work on more brackets
+(setq electric-pair-pairs '(
+			    (?\" . ?\")
+                            (?\{ . ?\})
+                            ))
 
-  (when (functionp 'set-fontset-font)
-    (set-fontset-font "fontset-default"
-                      'unicode
-                      (font-spec :family "mononoki"
-                                 :width 'normal
-                                 :size 14.4
-                                 :weight 'normal))))
-
-(setq-default indicate-empty-lines t)
-(when (not indicate-empty-lines)
-  (toggle-indicate-empty-lines))
+(use-package paren
+  :ensure t
+  :config
+  (setq show-paren-style 'expression)
+  (show-paren-mode t))
 #+end_src
-
-#+RESULTS:
 
 ** Indentation
 #+begin_src emacs-lisp
@@ -197,152 +74,10 @@ This is the list of packages used in this configuration.
 (global-visual-line-mode t)
 #+end_src
 
-* Utilities
-** Helm Mode
-#+begin_src emacs-lisp
-(require 'helm)
-(require 'helm-config)
-
-(global-set-key (kbd "C-c h") 'helm-command-prefix)
-(global-set-key (kbd "M-x") 'helm-M-x)
-
-(setq helm-M-x-fuzzy-match t)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "C-s") 'helm-occur)
-(global-set-key (kbd "C-h SPC") 'helm-all-mark-rings)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-
-(when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
-
-(setq helm-split-window-in-side-p           t
-      helm-move-to-line-cycle-in-source     t
-      helm-ff-search-library-in-sexp        t
-      helm-M-x-fuzzy-match                  t
-      helm-buffers-fuzzy-matching           t
-      helm-locate-fuzzy-match               t
-      helm-recentf-fuzzy-match              t
-      helm-scroll-amount                    8
-      helm-ff-file-name-history-use-recentf t)
-
-(helm-mode 1)
-(helm-autoresize-mode t)
-
-(setq helm-buffers-fuzzy-matching t
-      helm-recentf-fuzzy-match    t)
-
-#+end_src
-
-** Dired+ Mode
-#+begin_src emacs-lisp
-(require 'dired+)
-#+end_src
-
-** Flx ido
-#+begin_src emacs-lisp
-;;(require 'flx-ido)
-;(ido-mode 1)
-;(ido-everywhere 1)
-;(flx-ido-mode 1)
-;; disable ido faces to see flx highlights.
-;(setq ido-enable-flex-matching t)
-;(setq ido-use-faces nil)
-#+end_src
-
-** Smex Mode
-#+begin_src emacs-lisp
-;(require 'smex) ; Not needed if you use package.el
-;(smex-initialize) ; Can be omitted. This might cause a (minimal) delay
-; when Smex is auto-initialized on its first run.
-;(global-set-key (kbd "M-x") 'smex)
-;(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-;; This is your old M-x.
-;(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
-#+end_src
-
-** Better Parenthesis
-#+begin_src emacs-lisp
-(electric-pair-mode 1)
-;; make electric-pair-mode work on more brackets
-(setq electric-pair-pairs '(
-			    (?\" . ?\")
-                            (?\{ . ?\})
-                            ))
-
-;; hightlight matching parenthesis
-(require 'paren)
-; possible values: mixed, expression
-(setq show-paren-style 'expression)
-(show-paren-mode t)
-#+end_src
-
-** Neotree
-#+begin_src emacs-lisp
-(require 'neotree)
-(global-set-key [f8] 'neotree-toggle)
-#+end_src
-
 ** Fix term backgroud color
 #+begin_src emacs
 (setq term-default-fg-color (face-foreground 'default))
 (setq term-default-bg-color (face-background 'default))
-#+end_src
-
-** Expand Region
-#+begin_src emacs-lisp
-(require 'expand-region)
-(global-set-key (kbd "C-c C-<SPC>") 'er/expand-region)
-#+end_src
-
-** Google Translate
-#+begin_src emacs-lisp
-(require 'google-translate)
-(require 'google-translate-smooth-ui)
-(global-set-key "\C-ct" 'google-translate-at-point)
-(global-set-key "\C-cT" 'google-translate-query-translate)
-#+end_src
-
-** Undo Tree
-#+begin_src emacs-lisp
-(require 'undo-tree)
-(global-undo-tree-mode)
-(defalias 'redo 'undo-tree-redo)
-(global-set-key (kbd "C-M-z") 'undo) ; 【Ctrl+z】
-(global-set-key (kbd "C-M-S-z") 'redo) ; 【Ctrl+Shift+z】;  Mac style
-#+end_src
-
-** Auto Complete
-#+begin_src emacs-lisp
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-
-;; company fuzzy matching
-(with-eval-after-load 'company
-  (company-flx-mode +1))
-#+end_src
-
-** Yasnippet
-#+begin_src emacs-lisp
-(require 'yasnippet)
-(yas-global-mode 1)
-
-; lets define a function which initializes auto-comple-c-headers and gets called for c/c++ hooks
-(defun my:ac-c-headers-init ()
-  (require 'auto-complete-c-headers)
-  (add-to-list 'ac-sources 'ac-source-c-headers)
-  (add-to-list 'achead:include-directories  '"/usr/include/c++/5.2.0"))
-(add-hook 'c++-mode-hook 'my:ac-c-headers-init)
-(add-hook 'c-mode-hook 'my:ac-c-headers-init)
-#+end_src
-
-** Iedit
-#+begin_src emacs-lisp
-(define-key global-map (kbd "C-c ,") 'iedit-mode)
 #+end_src
 
 ** Line number
@@ -351,262 +86,12 @@ This is the list of packages used in this configuration.
 (global-set-key (kbd "<f5>") 'linum-mode)
 #+end_src
 
-** Ace window
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-x o") 'ace-window)
-(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-#+end_src
-
-** Org-bullets settings
-#+begin_src emacs-lisp
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-#+end_src
-
-** Org contrib
-#+BEGIN_SRC emacs-lisp
-(require 'org-mime)
-(setq org-mime-library 'mml)
-#+END_SRC
-
-** Org-present settings
-** Org-drill settings
-#+begin_src emacs-lisp
-(require 'org-drill)
-#+end_src
-#+begin_src emacs-lisp
-(autoload 'org-present "org-present" nil t)
-(eval-after-load "org-present"
-  '(progn
-     (add-hook 'org-present-mode-hook
-               (lambda ()
-                 (org-present-big)
-                 (org-display-inline-images)
-                 (org-present-read-only)))
-     (add-hook 'org-present-mode-quit-hook
-               (lambda ()
-                 (org-present-small)
-                 (org-remove-inline-images)
-                 (org-present-show-cursor)
-                 (org-present-read-write)))))
-#+end_src
-
-* Terminal Settings
+** Terminal Settings
 #+begin_src emacs-lisp
 (setq system-uses-terminfo nil)
 #+end_src
 
-* Magit
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-x g") 'magit-status)
-#+end_src
-* Program Hooks
-#+begin_src emacs
-#+end_src
-
-* Themes
-#+begin_src emacs-lisp
-(if window-system
-  (load-theme 'monokai t)
-  (load-theme 'wombat t))
-
-;;   (require 'powerline)
-;;   (require 'moe-theme)
-;;   ; blue, orange,green,magenta, yello, purple, red, cyan, w/b
-;;   (moe-theme-set-color 'orange)
-;;   
-;;   (setq moe-theme-highlight-buffer-id t)
-;;  ; (powerline-moe-theme)
-;;   (moe-light)
-#+end_src
-
-* Chinese Input
-  (require 'chinese-pyim)
-* Compilation ansi color fix
-#+begin_src emacs-lisp
-(require 'ansi-color)
-(defun colorize-compilation-buffer ()
-  (toggle-read-only)
-  (ansi-color-apply-on-region (point-min) (point-max))
-  (toggle-read-only))
-(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-#+end_src
-* Org mode
-#+begin_src emacs-lisp
- (setq org-log-redeadline 'note)
- (eval-after-load "org"
- '(require 'ox-md nil t))
-#+end_src
-* Org export
-#+begin_src emacs-lisp
-(setq org-src-fontify-natively t)
-(require 'ox-latex)
-(add-to-list 'org-latex-packages-alist '("" "minted"))
-(setq org-latex-listings 'minted)
-(setq org-latex-pdf-process
-      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-#+end_src
-
-* Org Babel
-#+begin_src emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
-  '((sh . t)
-    (python . t)
-    (emacs-lisp . t)
-    (clojure . t)
-    (C . t)
-   ))
-#+end_src
-* Org2blog
-#+begin_src emacs-lisp
-(require 'org2blog-autoloads)
-(setq org2blog/wp-use-sourcecode-shortcode 't)
-(setq org2blog/wp-blog-alist
-      '(("wordpress"
-         :url "https://lvguowei.wordpress.com/xmlrpc.php"
-         :username "lvguowei"
-         :default-title "Hello World"
-         :default-categories ("org2blog" "emacs")
-         :tags-as-categories nil)
-        ))
-#+end_src
-* Take notes more effectively with org-mode
-** Step1. Set up a keyboard shorcut to go to the main org file
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-c o") 
-                (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
-#+end_src
-** Step2. Use org-refile to file or jump to headings
-#+begin_src emacs-lisp
-;; Set the agenda file pool
-(setq org-agenda-files '("~/Dropbox/org"))
-(setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
-#+end_src
-** Step3. Use org-capture
- #+begin_src emacs-lisp
-(setq org-default-notes-file "/home/lv/Dropbox/org/organizer.org")
-(define-key global-map "\C-cc" 'org-capture)
- #+end_src
-** Step4. Define your own org-capture-template
-#+begin_src emacs-lisp
-(setq org-capture-templates
-      (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
-               "* TODO %?\n%U\n%a\n")
-              ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
-               "* %? %^g\n%U\n")
-	       ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
-               "* TODO %?\n%U\n%a\n")
-               )))
-#+end_src
-** Step5. Use deft to quickly browse through the notes
-#+begin_src emacs-lisp
-(require 'deft)
-(setq deft-directory "~/Dropbox/org")
-(setq deft-extension "org")
-(setq deft-text-mode 'org-mode)
-(setq deft-use-filename-as-title t)
-(setq deft-use-filter-string-for-filename t)
-(setq deft-auto-save-interval 0)
-;;key to launch deft
-(global-set-key (kbd "C-c d") 'deft)
-#+end_src
-** Step6. Agenda view
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-c a") 'org-agenda)
-#+end_src
-
-* Mu4e
-#+begin_src emacs-lisp
-;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
-;; ;; example configuration for mu4e
-;; 
-;; (require 'mu4e)
-;; 
-;; ;; default
-;; ;; (setq mu4e-maildir "~/Maildir")
-;; 
-;; (setq mu4e-drafts-folder "/[Gmail].Drafts")
-;; (setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-;; (setq mu4e-trash-folder  "/[Gmail].Trash")
-;; 
-;; ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-;; (setq mu4e-sent-messages-behavior 'delete)
-;; 
-;; ;; (See the documentation for `mu4e-sent-messages-behavior' if you have
-;; ;; additional non-Gmail addresses and want assign them different
-;; ;; behavior.)
-;; 
-;; ;; setup some handy shortcuts
-;; ;; you can quickly switch to your Inbox -- press ``ji''
-;; ;; then, when you want archive some messages, move them to
-;; ;; the 'All Mail' folder by pressing ``ma''.
-;; 
-;; (setq mu4e-maildir-shortcuts
-;;     '( ("/INBOX"               . ?i)
-;;        ("/[Gmail].Sent Mail"   . ?s)
-;;        ("/[Gmail].Trash"       . ?t)
-;;        ("/[Gmail].All Mail"    . ?a)))
-;; 
-;; ;; allow for updating mail using 'U' in the main view:
-;; (setq mu4e-get-mail-command "offlineimap")
-;; 
-;; ;; something about ourselves
-;; (setq
-;;    user-mail-address "lvguowei1002@gmail.com"
-;;    user-full-name  "Guowei Lv"
-;;    mu4e-compose-signature
-;;     (concat
-;;       "Guowei Lv\n"
-;;       ""))
-;; 
-;; ;; sending mail -- replace USERNAME with your gmail username
-;; ;; also, make sure the gnutls command line utils are installed
-;; ;; package 'gnutls-bin' in Debian/Ubuntu
-;; 
-;; (require 'smtpmail)
-;; (setq message-send-mail-function 'smtpmail-send-it
-;;    starttls-use-gnutls t
-;;    smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-;;    smtpmail-auth-credentials
-;;      '(("smtp.gmail.com" 587 "lvguowei1002@gmail.com" nil))
-;;    smtpmail-default-smtp-server "smtp.gmail.com"
-;;    smtpmail-smtp-server "smtp.gmail.com"
-;;    smtpmail-smtp-service 587)
-;; 
-;; ;; alternatively, for emacs-24 you can use:
-;; ;;(setq message-send-mail-function 'smtpmail-send-it
-;; ;;     smtpmail-stream-type 'starttls
-;; ;;     smtpmail-default-smtp-server "smtp.gmail.com"
-;; ;;     smtpmail-smtp-server "smtp.gmail.com"
-;; ;;     smtpmail-smtp-service 587)
-;; 
-;; ;; don't keep message buffers around
-;; (setq message-kill-buffer-on-exit t)
-;; (require 'mu4e-contrib)
-;; (setq mu4e-html2text-command 'mu4e-shr2text)
-;; (setq  mu4e-view-prefer-html t)
-;; ;; enable inline images
-;; (setq mu4e-view-show-images t)
-;; ;; use imagemagick, if available
-;; (when (fboundp 'imagemagick-register-types)
-;;    (imagemagick-register-types))
-;; 
-;; (setq mu4e-attachment-dir
-;;   (lambda (fname mtype)
-;;     (cond
-;;       ;; docfiles go to ~/Desktop
-;;       ((and fname (string-match "\\.doc$" fname))  "~/Desktop")
-;;       ;; ... other cases  ...
-;;       (t "~/Downloads")))) ;; everything else
-;; 
-;; ;; config for mu4e notification
-;; (mu4e-alert-set-default-style 'libnotify)
-;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-#+end_src
-* Better defaults
+** Smart Beginning of Line
 #+begin_src emacs-lisp
 (defun spacemacs/smart-move-beginning-of-line (arg)
   "Move point back to indentation of beginning of line.
@@ -628,27 +113,275 @@ point reaches the beginning or end of the buffer, stop there."
       (move-beginning-of-line 1))))
 (global-set-key (kbd "C-a") 'spacemacs/smart-move-beginning-of-line)
 #+end_src
-
-* Keyboard Settings for Mac
+** Keyboard Settings for Mac
 #+begin_src emacs-lisp
 (setq mac-option-modifier nil
       mac-command-modifier 'meta
       x-select-enable-clipboard t)
 #+end_src
-* Clojure Settings
+** Hungry delete config
 #+begin_src emacs-lisp
-;; Enable paredit for Clojure
-(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+(load "cc-mode")
+(global-set-key (kbd "C-<delete>") 'c-hungry-delete-forward)
+(global-set-key (kbd "C-<backspace>") 'c-hungry-delete-backwards)
+#+end_src
 
-;; This is useful for working with camel-case tokens, like names of
-;; Java classes (e.g. JavaClassName)
-(add-hook 'clojure-mode-hook 'subword-mode)
+** Resizing windows
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<C-up>") 'shrink-window)
+(global-set-key (kbd "<C-down>") 'enlarge-window)
+(global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
+(global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+#+END_SRC
 
-;; A little more syntax highlighting
-(require 'clojure-mode-extra-font-locking)
+* Melpa Packages
+** Projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :init
+  (require 'recentf)
+  :config
+  (progn
+    (projectile-global-mode)
+    (setq projectile-enable-caching t)
+    (setq projectile-completion-system 'helm)
+    (setq projectile-switch-project-action 'helm-projectile)
+    (use-package ag
+      :commands ag
+      :ensure t)))
+#+END_SRC
 
-;; syntax hilighting for midje
-(add-hook 'clojure-mode-hook
+** Helm Mode
+#+begin_src emacs-lisp
+(use-package helm
+  :ensure t
+  :diminish helm-mode
+  :init (progn
+          (require 'helm-config)
+          (use-package helm-projectile
+            :ensure t
+            :bind ("C-c p h" . helm-projectile)
+	    :config
+	    (progn
+	      (helm-projectile-on)
+	      (setq projectile-indexing-method 'alien)))
+          (use-package helm-ag :defer 10  :ensure t))
+  :config
+  (helm-autoresize-mode t)
+  (helm-mode 1)
+  (setq helm-ff-newfile-prompt-p nil
+        helm-M-x-fuzzy-match t
+	helm-buffers-fuzzy-matching t
+	helm-split-window-in-side-p t
+	helm-recentf-fuzzy-match t
+	helm-ff-file-name-history-use-recentf t)
+
+  :bind (("C-c h" . helm-command-prefix)
+         ("C-x b" . helm-mini)
+         ("C-`" . helm-resume)
+         ("M-x" . helm-M-x)
+	 ("C-s" . helm-occur)
+	 ("M-y" . helm-show-kill-ring)
+         ("C-x C-f" . helm-find-files)
+	 :map helm-map
+         ("<tab>" . helm-execute-persistent-action)
+	 ("C-i" . helm-execute-persistent-action)
+	 ("C-z" . helm-select-action)))
+#+end_src
+
+** Dired+ Mode
+#+begin_src emacs-lisp
+(use-package dired+
+  :ensure t)
+#+end_src
+
+** Neotree
+#+begin_src emacs-lisp
+(use-package neotree
+  :ensure t
+  :config
+  (global-set-key [f8] 'neotree-toggle))
+#+end_src
+
+** Expand Region
+#+begin_src emacs-lisp
+(use-package expand-region
+  :ensure t
+  :commands er/expand-region
+  :bind ("C-c C-<SPC>" . er/expand-region))
+#+end_src
+
+** Undo Tree
+#+begin_src emacs-lisp
+(use-package undo-tree
+  :ensure t)
+#+end_src
+
+** Auto Complete
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :init (progn
+          (use-package company-flx
+	    :ensure t))
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  (company-flx-mode +1))
+  
+#+end_src
+
+** Yasnippet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+
+#+end_src
+
+** Iedit
+#+begin_src emacs-lisp
+(use-package iedit
+  :ensure t
+  :bind ("C-c ," . iedit-mode))
+#+end_src
+
+** Ace window
+#+begin_src emacs-lisp
+(use-package ace-window
+  :ensure t
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind ("C-x o" . ace-window))
+#+end_src
+
+** Org Mode Settings
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :ensure org-plus-contrib)
+
+(setq org-log-redeadline 'note)
+(eval-after-load "org"
+ '(require 'ox-md nil t))
+
+(setq org-src-fontify-natively t)
+(require 'ox-latex)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+(setq org-latex-listings 'minted)
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+#+END_SRC
+
+*** Org-bullets settings
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+end_src
+
+*** Org contrib
+#+BEGIN_SRC emacs-lisp
+(require 'org-mime)
+(setq org-mime-library 'mml)
+#+END_SRC
+*** Org Babel
+#+begin_src emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+  '((sh . t)
+    (python . t)
+    (emacs-lisp . t)
+    (clojure . t)
+    (C . t)))
+#+end_src
+
+*** Take notes more effectively with org-mode
+**** Step1. Set up a keyboard shorcut to go to the main org file
+  #+begin_src emacs-lisp
+(global-set-key (kbd "C-c o") 
+                (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
+  #+end_src
+**** Step2. Use org-refile to file or jump to headings
+  #+begin_src emacs-lisp
+;; Set the agenda file pool
+(setq org-agenda-files '("~/Dropbox/org"))
+(setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
+  #+end_src
+**** Step3. Use org-capture
+   #+begin_src emacs-lisp
+(setq org-default-notes-file "/home/lv/Dropbox/org/organizer.org")
+(define-key global-map "\C-cc" 'org-capture)
+   #+end_src
+**** Step4. Define your own org-capture-template
+  #+begin_src emacs-lisp
+(setq org-capture-templates
+      (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
+               "* TODO %?\n%U\n%a\n")
+              ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
+               "* %? %^g\n%U\n")
+	       ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
+               "* TODO %?\n%U\n%a\n")
+               )))
+  #+end_src
+**** Step5. Use deft to quickly browse through the notes
+  #+begin_src emacs-lisp
+(use-package deft
+  :ensure t
+  :config
+  (setq deft-directory "~/Dropbox/org")
+  (setq deft-extension "org")
+  (setq deft-text-mode 'org-mode)
+  (setq deft-use-filename-as-title t)
+  (setq deft-use-filter-string-for-filename t)
+  (setq deft-auto-save-interval 0)
+  :bind ("C-c d" . deft))
+  #+end_src
+**** Step6. Agenda view
+  #+begin_src emacs-lisp
+(global-set-key (kbd "C-c a") 'org-agenda)
+  #+end_src
+
+** Magit
+#+begin_src emacs-lisp
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status))
+#+end_src
+
+** Chinese Input
+#+BEGIN_SRC emacs-lisp
+(use-package chinese-pyim
+  :ensure t)
+#+END_SRC
+
+** Paredit
+#+BEGIN_SRC emacs-lisp
+(use-package paredit
+  :ensure t)
+#+END_SRC
+** Clojure Mode
+ #+begin_src emacs-lisp
+(use-package flycheck-pos-tip
+  :ensure t)
+
+(use-package clojure-mode
+  :ensure t
+  :init
+  (progn
+    (use-package clojure-mode-extra-font-locking
+      :ensure t)
+    (use-package flycheck-clojure
+      :ensure t))
+  :config
+  (progn
+    (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+    (add-hook 'clojure-mode-hook 'subword-mode)
+    (add-hook 'clojure-mode-hook
           (lambda ()
             (setq inferior-lisp-program "lein repl")
             (font-lock-add-keywords
@@ -658,7 +391,7 @@ point reaches the beginning or end of the buffer, stop there."
                ("(\\(background?\\)"
                 (1 font-lock-keyword-face))))
             (define-clojure-indent (fact 1))
-            (define-clojure-indent (facts 1))))
+            (define-clojure-indent (facts 1))))))
 
 (defun clojure/fancify-symbols (mode)
   "Pretty symbols for Clojure's anonymous functions and sets,
@@ -683,55 +416,45 @@ point reaches the beginning or end of the buffer, stop there."
 (dolist (m '(clojure-mode clojurescript-mode clojurec-mode clojurex-mode))
 	  (clojure/fancify-symbols m))
 
-;; customize cljs repl
-;  (setq cider-cljs-lein-repl
-;        "(do (require 'figwheel-sidecar.repl-api)
-;             (figwheel-sidecar.repl-api/start-figwheel!)
-;             (figwheel-sidecar.repl-api/cljs-repl))")
 
-;;;;;
 ;; Cider
-;;;;
+(use-package cider
+  :ensure t
+  :config
+  (progn
+    ;; provides minibuffer documentation for the code you're typing into the repl
+    (add-hook 'cider-mode-hook #'eldoc-mode)
 
-;; provides minibuffer documentation for the code you're typing into the repl
-(add-hook 'cider-mode-hook #'eldoc-mode)
+    ;; go right to the REPL buffer when it's finished connecting
+    (setq cider-repl-pop-to-buffer-on-connect t)
 
-;; go right to the REPL buffer when it's finished connecting
-(setq cider-repl-pop-to-buffer-on-connect t)
+    ;; When there's a cider error, show its buffer and switch to it
+    (setq cider-show-error-buffer t)
+    (setq cider-auto-select-error-buffer t)
 
-;; When there's a cider error, show its buffer and switch to it
-(setq cider-show-error-buffer t)
-(setq cider-auto-select-error-buffer t)
+    ;; Where to store the cider history.
+    (setq cider-repl-history-file "~/.emacs.d/cider-history")
 
-;; Where to store the cider history.
-(setq cider-repl-history-file "~/.emacs.d/cider-history")
+    ;; Wrap when navigating history.
+    (setq cider-repl-wrap-history t)
 
-;; Wrap when navigating history.
-(setq cider-repl-wrap-history t)
+    ;; enable paredit in your REPL
+    (add-hook 'cider-repl-mode-hook 'paredit-mode)
 
-;; enable paredit in your REPL
-(add-hook 'cider-repl-mode-hook 'paredit-mode)
+    ;; Use clojure mode for other extensions
+    (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
+    (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
+    ;(add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
+    (add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))))
 
-;; Use clojure mode for other extensions
-(add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
-(add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
-;(add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
-(add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
 
 ;; clojure refactor
-    (require 'clj-refactor)
-    (defun clj-refactor-mode-hook ()
-        (clj-refactor-mode 1)
-        (yas-minor-mode 1) ; for adding require/use/import statements
-        ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-        (cljr-add-keybindings-with-prefix "C-c C-m"))
-    
-    (add-hook 'clojure-mode-hook #'clj-refactor-mode-hook)
+(use-package clj-refactor
+  :ensure t)
 
 ;; org babel settings
 (require 'ob-clojure)
 (setq org-babel-clojure-backend 'cider)
-
 
 ;; squiggly-clojure
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
@@ -746,176 +469,94 @@ point reaches the beginning or end of the buffer, stop there."
 ;; compojure indentation
 (define-clojure-indent
   (defroutes 'defun)
-  (GET 4)
-  (POST 4)
-  (PUT 4)
-  (DELETE 4)
-  (HEAD 4)
-  (ANY 4)
-  (context 4))
+  (GET 2)
+  (POST 2)
+  (PUT 2)
+  (DELETE 2)
+  (HEAD 2)
+  (ANY 2)
+  (context 2))
 
-#+end_src
+ #+end_src
 
-* Avy configuration
-Quick jump  
+** Avy configuration
 #+begin_src emacs-lisp
-(global-set-key (kbd "M-j") 'avy-goto-char-2)
+(use-package avy
+  :ensure t
+  :bind ("M-j" . avy-goto-char-2))
 #+end_src
 
-* Rainbow delimiter mode
+** Rainbow delimiter mode
 #+begin_src emacs-lisp
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+end_src
 
-* Disable highlight changes mode
+** Disable highlight changes mode
 #+begin_src emacs-lisp
 (highlight-changes-mode -1)
 #+end_src
-* Eyebrowse
-C-<	Switch to previous window config
-C->	Switch to next window config
-C-'	Switch to last window config
-C-"	Close current window config
-M-0	Switch to window config 0
-...	...
-M-9	Switch to window config 9
 
+** Buffermove
 #+begin_src emacs-lisp
-;(eyebrowse-mode t)
-;(eyebrowse-setup-opinionated-keys)
-
+(use-package buffer-move
+  :ensure t
+  :bind (("<C-S-up>" . buf-move-up)
+         ("<C-S-down>" . buf-move-down)
+	 ("<C-S-left>" . buf-move-left)
+	 ("<C-S-right>" . buf-move-right)))
 #+end_src
 
-* Buffermove
+** nyan cat
 #+begin_src emacs-lisp
-(require 'buffer-move)
-(global-set-key (kbd "<C-S-up>")     'buf-move-up)
-(global-set-key (kbd "<C-S-down>")   'buf-move-down)
-(global-set-key (kbd "<C-S-left>")   'buf-move-left)
-(global-set-key (kbd "<C-S-right>")  'buf-move-right)
+(use-package nyan-mode
+  :ensure t
+  :config
+  (nyan-mode t))
 #+end_src
 
-* Hungry delete config
-#+begin_src emacs-lisp
-(load "cc-mode")
-(global-set-key (kbd "C-<delete>") 'c-hungry-delete-forward)
-(global-set-key (kbd "C-<backspace>") 'c-hungry-delete-backwards)
-#+end_src
-
-* EMMS & SoundCloud
-#+begin_src emacs-lisp
-(require 'emms-setup)
-(emms-standard)
-(emms-default-players)
-(setq emms-source-file-default-directory "~/Music/")
-#+end_src
-* nyan cat
-#+begin_src emacs-lisp
-(nyan-mode t)
-(add-hook 'eshell-load-hook 'nyan-prompt-enable)
-#+end_src
-* Common lisp
+** Common lisp
 #+begin_src emacs-lisp
 (load (expand-file-name "~/quicklisp/slime-helper.el"))
 ;; Replace "sbcl" with the path to your implementation
 (setq inferior-lisp-program "sbcl")
 (setq slime-contribs '(slime-fancy))
 #+end_src
-* Projectile
-#+BEGIN_SRC emacs-lisp
-(projectile-global-mode)
-(setq projectile-completion-system 'helm)
-(helm-projectile-on)
-#+END_SRC
-* C++ Configuration
-** Rtags
-#+BEGIN_SRC emacs-lisp
- (require 'rtags)
- (require 'company-rtags)
- 
- (setq rtags-completions-enabled t)
- (eval-after-load 'company
-   '(add-to-list
-     'company-backends 'company-rtags))
- (setq rtags-autostart-diagnostics t)
- (rtags-enable-standard-keybindings)
- 
- (setq rtags-use-helm t)
-#+END_SRC
 
-** Irony
-#+BEGIN_SRC emacs-lisp
- (add-hook 'c++-mode-hook 'irony-mode)
- (add-hook 'c-mode-hook 'irony-mode)
- (add-hook 'objc-mode-hook 'irony-mode)
- 
- (defun my-irony-mode-hook ()
-   (define-key irony-mode-map [remap completion-at-point]
-     'irony-completion-at-point-async)
-   (define-key irony-mode-map [remap complete-symbol]
-     'irony-completion-at-point-async))
- 
- (add-hook 'irony-mode-hook 'my-irony-mode-hook)
- (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-#+END_SRC
 
-** Company-irony
-#+BEGIN_SRC emacs-lisp
- (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
- (setq company-backends (delete 'company-semantic company-backends))
- 
- (setq company-idle-delay 0)
- ;(define-key c-mode-map [(tab)] 'company-complete)
- ;(define-key c++-mode-map [(tab)] 'company-complete)
- 
- (require 'company-irony-c-headers)
- (eval-after-load 'company
-   '(add-to-list
-     'company-backends '(company-irony-c-headers company-irony)))
-#+END_SRC
-
-#+RESULTS:
 ** Flycheck
 #+BEGIN_SRC emacs-lisp
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-;;  (require 'flycheck-rtags)
-;;  
-;;  (defun my-flycheck-rtags-setup ()
-;;    (flycheck-select-checker 'rtags)
-;;    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-;;    (setq-local flycheck-check-syntax-automatically nil))
-;;  ;; c-mode-common-hook is also called by c++-mode
-;;  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-;;  
-;;  (eval-after-load 'flycheck
-;;    '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
-(add-hook 'c++-mode-hook (lambda () (setq flycheck-gcc-language-standard "c++11")))
-(add-hook 'c++-mode-hook (lambda () (setq flycheck-clang-language-standard "c++11")))
-#+END_SRC
-
-** Cmake-ide
-#+BEGIN_SRC emacs-lisp
-(require 'rtags) ;; optional, must have rtags installed
-(cmake-ide-setup)
+(use-package flycheck
+  :ensure t
+  :config (setq flycheck-html-tidy-executable "tidy5"))
 #+END_SRC
 
 ** Multiple Cursors
 #+begin_src emacs-lisp
-(require 'multiple-cursors)
-(global-set-key (kbd "C-M->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-M-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-M-<") 'mc/mark-all-like-this)
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-M->" . mc/mark-next-like-this)
+         ("C-M-<" . mc/mark-previous-like-this)
+	 ("C-c C-M-<" . mc/mark-all-like-this)))
 #+end_src
-* Resizing windows
+
+** EDBI
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<C-up>") 'shrink-window)
-(global-set-key (kbd "<C-down>") 'enlarge-window)
-(global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
-(global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+(use-package edbi
+  :ensure t)
 #+END_SRC
 
-* EDBI
+** Rest Client
 #+BEGIN_SRC emacs-lisp
-(require 'edbi)
+(use-package restclient
+  :ensure t)
 #+END_SRC
+
+** Multi-Term
+#+BEGIN_SRC emacs-lisp
+(use-package multi-term
+  :ensure t)
+#+END_SRC
+  
