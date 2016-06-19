@@ -31,6 +31,8 @@ values."
      emacs-lisp
      git
      markdown
+     (colors :variables
+             colors-enable-nyan-cat-progress-bar t)
      org
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -38,12 +40,13 @@ values."
      ;; spell-checking
      syntax-checking
      version-control
+     window-management
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag)
+   dotspacemacs-additional-packages '(ag neotree paren deft)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -280,14 +283,62 @@ you should place your code here."
                               (?\{ . ?\})
                               ))
 
-  (use-package paren
-    :ensure t
-    :config
-    (setq show-paren-style 'expression)
-    (show-paren-mode t)
-    (set-face-background 'show-paren-match "#000")
-                                        ;(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
-    )
+  (setq show-paren-style 'expression)
+  (show-paren-mode t)
+  (set-face-background 'show-paren-match "#000")
+
+  ;; Neo tree
+  (global-set-key [f8] 'neotree-toggle)
+
+  ;; Expand region
+  (global-set-key (kbd "C-=") 'er/expand-region)
+
+  ;; Ace window
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (global-set-key (kbd "C-x o") 'ace-window)
+
+  ;; Magit
+  (global-set-key (kbd "C-x g") 'magit-status)
+
+  ;; Resize windows
+  (global-set-key (kbd "<C-up>") 'shrink-window)
+  (global-set-key (kbd "<C-down>") 'enlarge-window)
+  (global-set-key (kbd "<C-left>") 'shrink-window-horizontally)
+  (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
+
+  ;; Take notes more effectively with org mode
+
+  ;; Step1. Set up a keyboard shorcut to go to the main org file
+  (global-set-key (kbd "C-c o") 
+                  (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
+  ;; Step2. Use org-refile to file or jump to headings
+  (setq org-agenda-files '("~/Dropbox/org"))
+  (setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
+
+  ;; Step3. Use org-capture
+  (setq org-default-notes-file "/home/lv/Dropbox/org/organizer.org")
+  (define-key global-map "\C-cc" 'org-capture)
+
+  ;; Step4. Define your own org-capture-template
+  (setq org-capture-templates
+        (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
+                 "* TODO %?\n%U\n%a\n")
+                ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
+                 "* %? %^g\n%U\n")
+                ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
+                 "* TODO %?\n%U\n%a\n")
+                )))
+  ;; Step5. Use deft to quickly browse through the notes
+  (setq deft-directory "~/Dropbox/org")
+  (setq deft-extension "org")
+  (setq deft-text-mode 'org-mode)
+  (setq deft-use-filename-as-title t)
+  (setq deft-use-filter-string-for-filename t)
+  (setq deft-auto-save-interval 0)
+  (global-set-key (kbd "C-c d") 'deft)
+
+  ;; Step6. Agenda view
+  (global-set-key (kbd "C-c a") 'org-agenda)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
