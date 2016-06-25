@@ -23,7 +23,8 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     auto-completion
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t)
      better-defaults
      clojure
      html
@@ -38,12 +39,14 @@ values."
             shell-default-shell 'eshell
             shell-default-height 30
             shell-default-position 'bottom)
-     ;; spell-checking
      syntax-checking
      version-control
      window-management
      themes-megapack
      ranger
+     ibuffer
+     fasd
+     emoji
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -116,10 +119,12 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Input Mono"
-                               :size 14
+                               :size 16
                                :weight normal
                                :width normal
-                               :powerline-scale 1.0)
+                               :powerline-scale 1.4
+
+                               )
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -258,6 +263,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
   ;; Clojure
   (setq clojure-enable-fancify-symbols t)
   (add-hook 'clojure-mode-hook 'enable-paredit-mode)
@@ -342,6 +348,13 @@ you should place your code here."
 
   ;; Step6. Agenda view
   (global-set-key (kbd "C-c a") 'org-agenda)
+
+  ;; Neotree
+  (setq neo-theme 'nerd)
+
+  ;; Powerline settings
+  (setq powerline-default-separator 'wave)
+  (spaceline-compile)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
