@@ -294,7 +294,7 @@ you should place your code here."
 
   (setq show-paren-style 'expression)
   (show-paren-mode t)
-  (set-face-background 'show-paren-match "#000")
+  ;(set-face-background 'show-paren-match "#000")
 
   ;; Neo tree
   (global-set-key [f8] 'neotree-toggle)
