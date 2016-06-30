@@ -47,6 +47,11 @@ values."
      ibuffer
      fasd
      emoji
+     restclient
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c++-mode
+            c-c++-enable-clang-support t)
+     gtags
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -292,7 +297,7 @@ you should place your code here."
                               (?\{ . ?\})
                               ))
 
-  (setq show-paren-style 'expression)
+  (setq show-paren-style 'parenthesis)
   (show-paren-mode t)
   ;(set-face-background 'show-paren-match "#000")
 
@@ -318,7 +323,7 @@ you should place your code here."
   ;; Take notes more effectively with org mode
 
   ;; Step1. Set up a keyboard shorcut to go to the main org file
-  (global-set-key (kbd "C-c o") 
+  (global-set-key (kbd "C-c o")
                   (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
   ;; Step2. Use org-refile to file or jump to headings
   (setq org-agenda-files '("~/Dropbox/org"))
@@ -355,7 +360,26 @@ you should place your code here."
   ;; Powerline settings
   (setq powerline-default-separator 'wave)
   (spaceline-compile)
+
+  ;; Bind clang-format-region to C-M-tab in all modes:
+  ;(global-set-key [C-M-tab] 'clang-format-region)
+  ;; Bind clang-format-buffer to tab on the c++-mode only:
+  (add-hook 'c++-mode-hook 'clang-format-bindings)
+  (defun clang-format-bindings ()
+    (define-key c++-mode-map [tab] 'clang-format-buffer))
+
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              ;; quick compilation
+              (set (make-local-variable 'compile-command)
+                   (concat "g++ -std=c++11 -Wall " buffer-file-name " && ./a.out"))
+              ;; (push 'company-semantic company-backends)
+              (setq company-clang-arguments '("-std=c++11"))
+              (setq flycheck-clang-language-standard "c++11")
+              (add-to-list 'company-c-headers-path-system
+                           "/usr/include/c++/6.1.1")))
   )
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
