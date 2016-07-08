@@ -15,14 +15,14 @@ values."
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load. If it is the symbol `all' instead
-   ;; of a list then all discovered layers will be installed.
+   ;; of a list thebuf-move-upn all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
+     ;; --------------------------------------------------buf-move-up--------------
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t)
      better-defaults
@@ -58,7 +58,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag neotree paren deft)
+   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -379,6 +379,13 @@ you should place your code here."
               (setq flycheck-clang-language-standard "c++11")
               (add-to-list 'company-c-headers-path-system
                            "/usr/include/c++/6.1.1")))
+
+  ;; Buffermove
+  (global-set-key (kbd "<C-S-up>") 'buf-move-up)
+  (global-set-key (kbd "<C-S-down>") 'buf-move-down)
+  (global-set-key (kbd "<C-S-left>") 'buf-move-left)
+  (global-set-key (kbd "<C-S-right>") 'buf-move-right)
+
   )
 
 
