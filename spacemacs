@@ -43,7 +43,8 @@ values."
      version-control
      window-management
      themes-megapack
-     ranger
+     (ranger :variables
+             ranger-show-preview t)
      ibuffer
      fasd
      emoji
@@ -53,6 +54,7 @@ values."
             c-c++-enable-clang-support t)
      gtags
      semantic
+     latex
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -385,7 +387,6 @@ you should place your code here."
   (global-set-key (kbd "<C-S-down>") 'buf-move-down)
   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
   (global-set-key (kbd "<C-S-right>") 'buf-move-right)
-
   )
 
 
