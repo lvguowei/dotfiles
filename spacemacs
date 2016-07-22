@@ -300,7 +300,7 @@ you should place your code here."
                               (?\{ . ?\})
                               ))
 
-  (setq show-paren-style 'parenthesis)
+  (setq show-paren-style 'expression)
   (show-paren-mode t)
   ;(set-face-background 'show-paren-match "#000")
 
