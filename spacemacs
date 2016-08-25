@@ -128,11 +128,9 @@ values."
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Input Mono"
                                :size 16
-                               :weight normal
+                               :weight extra-light
                                :width normal
-                               :powerline-scale 1.4
-
-                               )
+                               :powerline-scale 1.4)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -291,6 +289,9 @@ you should place your code here."
   ;; Line number settings
   (setq linum-format " %2i ")
   (global-set-key (kbd "<f5>") 'linum-mode)
+
+  ;; swoop
+  (setq helm-swoop-use-fuzzy-match t)
 
   ;; Better parens
   (electric-pair-mode 1)
