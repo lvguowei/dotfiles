@@ -55,6 +55,7 @@ values."
      gtags
      semantic
      latex
+     react
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -275,6 +276,11 @@ you should place your code here."
   (add-hook 'clojure-mode-hook 'enable-paredit-mode)
   (add-hook 'cider-repl-mode-hook 'paredit-mode)
   (setq cider-repl-pop-to-buffer-on-connect t)
+  (require 'cider)
+  (setq cider-cljs-lein-repl
+        "(do (require 'figwheel-sidecar.repl-api)
+           (figwheel-sidecar.repl-api/start-figwheel!)
+           (figwheel-sidecar.repl-api/cljs-repl))")
 
   ;; Hungry delete mode
   (load "cc-mode")
@@ -388,6 +394,21 @@ you should place your code here."
   (global-set-key (kbd "<C-S-down>") 'buf-move-down)
   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
   (global-set-key (kbd "<C-S-right>") 'buf-move-right)
+
+  (setq-default
+   ;; js2-mode
+   js2-basic-offset 2
+   ;; web-mode
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
+
+  (with-eval-after-load 'web-mode
+    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
   )
 
 
