@@ -17,14 +17,14 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list thebuf-move-upn all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(
-     ;; ----------------------------------------------------------------
+   '(;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; --------------------------------------------------buf-move-up--------------
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t)
+     sql
      better-defaults
      clojure
      html
@@ -52,7 +52,6 @@ values."
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-clang-support t)
-     gtags
      semantic
      latex
      react
@@ -271,6 +270,10 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  ;; org
+  (eval-after-load "org"
+    '(require 'ox-md nil t))
 
   ;; Clojure
   (setq clojure-enable-fancify-symbols t)
