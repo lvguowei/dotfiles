@@ -41,7 +41,6 @@ values."
             shell-default-position 'bottom)
      syntax-checking
      version-control
-     window-management
      themes-megapack
      (ranger :variables
              ranger-show-preview t)
