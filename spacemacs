@@ -54,6 +54,7 @@ values."
      semantic
      latex
      react
+     (gtags :variables gtags-enable-by-default nil)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -114,7 +115,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(alect-black-alt
+                         spacemacs-dark
                          spacemacs-light
                          solarized-light
                          solarized-dark
@@ -127,7 +129,7 @@ values."
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Input Mono"
                                :size 16
-                               :weight extra-light
+                               :weight normal
                                :width normal
                                :powerline-scale 1.4)
    ;; The leader key
@@ -413,7 +415,6 @@ you should place your code here."
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
   )
-
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
