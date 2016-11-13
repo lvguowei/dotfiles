@@ -23,7 +23,8 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; --------------------------------------------------buf-move-up--------------
      (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup t)
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip t)
      sql
      better-defaults
      clojure
