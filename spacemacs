@@ -61,7 +61,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move)
+   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move all-the-icons)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -371,7 +371,7 @@ you should place your code here."
   (global-set-key (kbd "C-c a") 'org-agenda)
 
   ;; Neotree
-  (setq neo-theme 'nerd)
+  (setq neo-theme 'icons)
 
   ;; Powerline settings
   (setq powerline-default-separator 'wave)
@@ -415,6 +415,7 @@ you should place your code here."
     (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
