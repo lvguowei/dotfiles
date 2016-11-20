@@ -43,8 +43,6 @@ values."
      syntax-checking
      version-control
      themes-megapack
-     (ranger :variables
-             ranger-show-preview t)
      ibuffer
      fasd
      emoji
