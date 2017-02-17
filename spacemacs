@@ -102,7 +102,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'random
+   dotspacemacs-startup-banner 998
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
@@ -115,7 +115,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(dracula
+   dotspacemacs-themes '(zenburn
+                         dracula
                          alect-black-alt
                          spacemacs-dark
                          spacemacs-light
@@ -123,7 +124,7 @@ values."
                          solarized-dark
                          leuven
                          monokai
-                         zenburn)
+                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
@@ -186,6 +187,8 @@ values."
    ;; define the position to display `helm', options are `bottom', `top',
    ;; `left', or `right'. (default 'bottom)
    dotspacemacs-helm-position 'bottom
+   ;; some hack to fix helm bug
+   dotspacemacs-helm-use-fuzzy 'source
    ;; If non nil the paste micro-state is enabled. When enabled pressing `p`
    ;; several times cycle between the kill ring content. (default nil)
    dotspacemacs-enable-paste-micro-state nil
@@ -356,8 +359,7 @@ you should place your code here."
                 ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
                  "* %? %^g\n%U\n")
                 ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
-                 "* TODO %?\n%U\n%a\n")
-                )))
+                 "* TODO %?\n%U\n%a\n"))))
   ;; Step5. Use deft to quickly browse through the notes
   (setq deft-directory "~/Dropbox/org")
   (setq deft-extension "org")
