@@ -60,7 +60,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move all-the-icons)
+   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move all-the-icons swiper counsel)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -102,7 +102,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 998
+   dotspacemacs-startup-banner 555
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
@@ -418,6 +418,25 @@ you should place your code here."
     (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
     (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
+  ;; swiper and ivy config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (global-set-key "\C-s" 'swiper)
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key (kbd "<f6>") 'ivy-resume)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+  (global-set-key (kbd "<f1> l") 'counsel-find-library)
+  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+  (global-set-key (kbd "C-c g") 'counsel-git)
+  (global-set-key (kbd "C-c j") 'counsel-git-grep)
+  (global-set-key (kbd "C-c k") 'counsel-ag)
+  (global-set-key (kbd "C-x l") 'counsel-locate)
+  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+  (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
