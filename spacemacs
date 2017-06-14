@@ -25,6 +25,9 @@ values."
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip t)
+     syntax-checking
+     (spell-checking :variables spell-checking-enable-by-default nil)
+     ibuffer
      sql
      better-defaults
      clojure
@@ -55,12 +58,13 @@ values."
      react
      (gtags :variables gtags-enable-by-default nil)
      selectric
+     chinese
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move all-the-icons swiper counsel base16-theme elfeed elfeed-goodies elfeed-org)
+   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move all-the-icons swiper counsel base16-theme elfeed elfeed-goodies elfeed-org chinese-pyim-greatdict)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -102,7 +106,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 555
+   dotspacemacs-startup-banner 'official
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
@@ -438,66 +442,8 @@ you should place your code here."
   (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
-  ;; elfeed configs
+)
 
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(variable-pitch ((t (:family "Operator Mono")))))
-
-  (use-package elfeed
-    :ensure t
-    :bind (:map elfeed-search-mode-map
-                ("q" . lgw/elfeed-save-db-and-bury)
-                ("Q" . lgw/elfeed-save-db-and-bury)
-                ("m" . elfeed-toggle-star)
-                ("M" . elfeed-toggle-star)
-                )
-    :init (add-hook 'elfeed-show-mode-hook
-                    (lambda () (buffer-face-set 'variable-pitch))))
-
-  (use-package elfeed-goodies
-    :ensure t
-    :config
-    (elfeed-goodies/setup))
-
-
-  (use-package elfeed-org
-    :ensure t
-    :config
-    (elfeed-org)
-    (setq rmh-elfeed-org-files (list "~/Dropbox/shared/elfeed.org")))
-
-
-  (setq elfeed-db-directory "~/Dropbox/shared/elfeeddb")
-
-  (defun elfeed-mark-all-as-read ()
-    (interactive)
-    (mark-whole-buffer)
-    (elfeed-search-untag-all-unread))
-
-
-  ;;functions to support syncing .elfeed between machines
-  ;;makes sure elfeed reads index from disk before launching
-  (defun lgw/elfeed-load-db-and-open ()
-    "Wrapper to load the elfeed db from disk before opening"
-    (interactive)
-    (elfeed-db-load)
-    (elfeed)
-    (elfeed-search-update--force))
-
-  ;;write to disk when quiting
-  (defun lgw/elfeed-save-db-and-bury ()
-    "Wrapper to save the elfeed db to disk before burying buffer"
-    (interactive)
-    (elfeed-db-save)
-    (quit-window))
-
-  (defalias 'elfeed-toggle-star
-    (elfeed-expose #'elfeed-search-toggle-all 'star))
-  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
