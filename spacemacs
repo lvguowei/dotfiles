@@ -47,7 +47,6 @@ values."
      version-control
      themes-megapack
      ibuffer
-     fasd
      emoji
      restclient
      (c-c++ :variables
@@ -55,7 +54,6 @@ values."
             c-c++-enable-clang-support t)
      semantic
      latex
-     react
      (gtags :variables gtags-enable-by-default nil)
      selectric
      chinese
@@ -289,11 +287,6 @@ you should place your code here."
   (add-hook 'clojure-mode-hook 'enable-paredit-mode)
   (add-hook 'cider-repl-mode-hook 'paredit-mode)
   (setq cider-repl-pop-to-buffer-on-connect t)
-  (require 'cider)
-  (setq cider-cljs-lein-repl
-        "(do (require 'figwheel-sidecar.repl-api)
-           (figwheel-sidecar.repl-api/start-figwheel!)
-           (figwheel-sidecar.repl-api/cljs-repl))")
 
   ;; Hungry delete mode
   (load "cc-mode")
