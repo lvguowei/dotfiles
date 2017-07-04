@@ -376,23 +376,10 @@ you should place your code here."
   (setq powerline-default-separator 'wave)
   (spaceline-compile)
 
-  ;; Bind clang-format-region to C-M-tab in all modes:
-  ;(global-set-key [C-M-tab] 'clang-format-region)
   ;; Bind clang-format-buffer to tab on the c++-mode only:
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
-
-  (add-hook 'c++-mode-hook
-            (lambda ()
-              ;; quick compilation
-              (set (make-local-variable 'compile-command)
-                   (concat "g++ -std=c++11 -Wall " buffer-file-name " && ./a.out"))
-              ;; (push 'company-semantic company-backends)
-              (setq company-clang-arguments '("-std=c++11"))
-              (setq flycheck-clang-language-standard "c++11")
-              (add-to-list 'company-c-headers-path-system
-                           "/usr/include/c++/6.1.1")))
 
   ;; Buffermove
   (global-set-key (kbd "<C-S-up>") 'buf-move-up)
