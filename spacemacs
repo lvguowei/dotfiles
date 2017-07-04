@@ -435,6 +435,8 @@ you should place your code here."
   (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
+  (setq kill-whole-line t)
+
 )
 
 
