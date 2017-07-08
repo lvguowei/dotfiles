@@ -32,6 +32,7 @@ values."
      better-defaults
      clojure
      html
+     python
      javascript
      emacs-lisp
      git
@@ -39,7 +40,7 @@ values."
      (colors :variables
              colors-enable-nyan-cat-progress-bar t)
      org
-     (shell :variables
+    (shell :variables
             shell-default-shell 'eshell
             shell-default-height 30
             shell-default-position 'bottom)
@@ -117,7 +118,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(zenburn
+   dotspacemacs-themes '(cyberpunk
+                         zenburn
                          dracula
                          alect-black-alt
                          spacemacs-dark
@@ -282,6 +284,30 @@ you should place your code here."
   (eval-after-load "org"
     '(require 'ox-md nil t))
 
+  (setq org-confirm-babel-evaluate nil
+        org-src-tab-acts-natively t
+        org-src-fontify-natively t)
+  (require 'ox-latex)
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
+  (setq org-latex-listings 'minted)
+  (setq org-latex-pdf-process
+        '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+  ;; literate programming using org and babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (ditaa . t)
+     (clojure . t)
+     (java . t)
+     (shell . t)
+     (plantuml . t)
+     (js . t)
+     (ruby . t)))
+
   ;; Clojure
   (setq clojure-enable-fancify-symbols t)
   (add-hook 'clojure-mode-hook 'enable-paredit-mode)
@@ -337,7 +363,6 @@ you should place your code here."
   (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
 
   ;; Take notes more effectively with org mode
-
   ;; Step1. Set up a keyboard shorcut to go to the main org file
   (global-set-key (kbd "C-c o")
                   (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
