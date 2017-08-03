@@ -17,7 +17,8 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list thebuf-move-upn all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(;; ----------------------------------------------------------------
+   '(
+     ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
@@ -29,8 +30,10 @@ values."
      (spell-checking :variables spell-checking-enable-by-default nil)
      ibuffer
      sql
+     rust
      better-defaults
      clojure
+     ruby
      html
      python
      javascript
@@ -57,7 +60,7 @@ values."
      latex
      (gtags :variables gtags-enable-by-default nil)
      selectric
-     chinese
+     ;;chinese
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -135,7 +138,7 @@ values."
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Operator Mono"
                                :size 16
-                               :weight normal
+                               :weight light
                                :width normal
                                :powerline-scale 1.4)
    ;; The leader key
@@ -299,6 +302,7 @@ you should place your code here."
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
+     (C . t)
      (python . t)
      (ditaa . t)
      (clojure . t)
