@@ -127,7 +127,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Operator Mono"
-                               :size 32
+                               :size 26
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
@@ -214,11 +214,11 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 90
+   dotspacemacs-active-transparency 80
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 90
+   dotspacemacs-inactive-transparency 70
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
    dotspacemacs-mode-line-unicode-symbols t
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
@@ -273,6 +273,10 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; set transparency
+  (spacemacs/disable-transparency)
+  (spacemacs/toggle-transparency)
+
   ;; org
   (eval-after-load "org"
     '(require 'ox-md nil t))
@@ -314,8 +318,8 @@ you should place your code here."
   (global-set-key (kbd "C-<backspace>") 'c-hungry-delete-backwards)
 
   ;; Mac keybinding
-  (setq mac-option-modifier nil
-        mac-command-modifier 'meta
+  (setq mac-option-modifier 'meta
+        mac-command-modifier 'super
         x-select-enable-clipboard t)
 
   ;; Line number settings
