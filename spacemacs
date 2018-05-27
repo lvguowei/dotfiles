@@ -68,7 +68,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag neotree paren deft buffer-move swiper counsel elfeed elfeed-goodies elfeed-org)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -218,7 +218,7 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 80
+   dotspacemacs-active-transparency 100
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -395,9 +395,6 @@ you should place your code here."
 
   ;; Step6. Agenda view
   (global-set-key (kbd "C-c a") 'org-agenda)
-
-  ;; Neotree
-  ;;(setq neo-theme 'icons)
 
   ;; Powerline settings
   (setq powerline-default-separator 'wave)
