@@ -39,7 +39,7 @@ values."
      html
      (python :variables
              python-enable-yapf-format-on-save t
-             python-sort-imports-on-save t)
+             python-sort-imports-on-save nil)
      (javascript :variables javascript-disable-tern-port-files nil)
      emacs-lisp
      git
@@ -63,6 +63,7 @@ values."
      latex
      (gtags :variables gtags-enable-by-default nil)
      selectric
+     themes-megapack
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
