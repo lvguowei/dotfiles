@@ -17,7 +17,7 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list thebuf-move-upn all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(
+   '(javascript
      php
      yaml
      ;; ----------------------------------------------------------------
@@ -40,7 +40,6 @@ values."
      (python :variables
              python-enable-yapf-format-on-save t
              python-sort-imports-on-save nil)
-     (javascript :variables javascript-disable-tern-port-files nil)
      emacs-lisp
      git
      markdown
@@ -69,7 +68,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -111,7 +110,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner "~/Pictures/4.png"
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
@@ -125,14 +124,14 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         spacemacs-dark
+                         dracula
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Operator Mono"
-                               :size 26
+   dotspacemacs-default-font '("Monoid"
+                               :size 34
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
@@ -282,6 +281,12 @@ you should place your code here."
   (spacemacs/disable-transparency)
   (spacemacs/toggle-transparency)
 
+  (require 'pyim)
+  (require 'pyim-basedict) ; 拼音词库设置，五笔用户 *不需要* 此行设置
+  (pyim-basedict-enable)   ; 拼音词库，五笔用户 *不需要* 此行设置
+  (setq default-input-method "pyim")
+  (global-set-key (kbd "C-\\") 'toggle-input-method)
+
   ;; org
   (eval-after-load "org"
     '(require 'ox-md nil t))
@@ -302,6 +307,7 @@ you should place your code here."
    'org-babel-load-languages
    '((emacs-lisp . t)
      (C . t)
+     (scheme . t)
      (python . t)
      (ditaa . t)
      (clojure . t)
@@ -438,6 +444,9 @@ you should place your code here."
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
   (setq kill-whole-line t)
+
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode-hook 'prettier-js-mode)
 
 )
 
