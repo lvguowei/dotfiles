@@ -69,7 +69,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -132,7 +132,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Monoid"
-                               :size 34
+                               :size 20
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
@@ -448,8 +448,15 @@ you should place your code here."
 
   (setq kill-whole-line t)
 
+  ;; JS configs
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode)
+
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 2)
+  (setq-default js2-basic-offset 2)
+
+  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
 
 )
 
