@@ -453,7 +453,8 @@ you should place your code here."
 
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
-  (setq-default js2-basic-offset 2)
+  (setq-default js2-basic-offset 2
+                js-indent-level 2)
   (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
 
   (defun setup-tide-mode ()
@@ -476,7 +477,7 @@ you should place your code here."
 
   (add-hook 'typescript-mode-hook #'setup-tide-mode)
 
-  (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+  (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil :indentSize 2 :tabSize 2))
 
   (require 'web-mode)
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
@@ -484,12 +485,13 @@ you should place your code here."
             (lambda ()
               (when (string-equal "tsx" (file-name-extension buffer-file-name))
                 (setup-tide-mode))))
+  (require 'flycheck)
   ;; enable typescript-tslint checker
   (flycheck-add-mode 'typescript-tslint 'web-mode)
 
   (add-hook 'js2-mode-hook #'setup-tide-mode)
   ;; configure javascript-tide checker to run after your default javascript checker
-  ;;(flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+  (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
 
   (require 'web-mode)
   (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
@@ -499,7 +501,7 @@ you should place your code here."
                 (setup-tide-mode))))
   ;; configure jsx-tide checker to run after your default jsx checker
   (flycheck-add-mode 'javascript-eslint 'web-mode)
-  ;;(flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
 )
 
 
