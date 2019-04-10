@@ -68,7 +68,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
