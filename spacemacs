@@ -68,7 +68,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -130,8 +130,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Monoid"
-                               :size 20
+   dotspacemacs-default-font '("Operator Mono"
+                               :size 28
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
