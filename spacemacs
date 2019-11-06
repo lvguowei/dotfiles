@@ -17,7 +17,8 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list thebuf-move-upn all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(javascript
+   '(csv
+     javascript
      php
      yaml
      ;; ----------------------------------------------------------------
@@ -26,6 +27,11 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; --------------------------------------------------buf-move-up--------------
      (auto-completion :variables
+                      auto-completion-return-key-behavior 'complete
+                      auto-completion-tab-key-behavior 'cycle
+                      auto-completion-complete-with-key-sequence nil
+                      auto-completion-complete-with-key-sequence-delay 0.1
+                      auto-completion-private-snippets-directory nil
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip t)
      (spell-checking :variables spell-checking-enable-by-default nil)
@@ -54,7 +60,7 @@ values."
      emoji
      restclient
      (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode
+            ;c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-clang-support t)
      semantic
      latex
@@ -63,6 +69,7 @@ values."
      ivy
      themes-megapack
      syntax-checking
+     docker
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -110,7 +117,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'random
+   dotspacemacs-startup-banner 'official
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
@@ -131,7 +138,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Operator Mono"
-                               :size 28
+                               :size 32
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
@@ -287,8 +294,6 @@ you should place your code here."
   (setq default-input-method "pyim")
   (global-set-key (kbd "C-\\") 'toggle-input-method)
 
-  (setq neo-theme 'icons)
-
   ;; org
   (eval-after-load "org"
     '(require 'ox-md nil t))
@@ -353,9 +358,6 @@ you should place your code here."
   (setq show-paren-style 'expression)
   (show-paren-mode t)
   ;(set-face-background 'show-paren-match "#000")
-
-  ;; Neo tree
-  (global-set-key [f8] 'neotree-toggle)
 
   ;; Expand region
   (global-set-key (kbd "C-=") 'er/expand-region)
