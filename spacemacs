@@ -19,7 +19,6 @@ values."
    dotspacemacs-configuration-layers
    '(csv
      javascript
-     php
      yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -37,10 +36,8 @@ values."
      (spell-checking :variables spell-checking-enable-by-default nil)
      ibuffer
      sql
-     rust
      better-defaults
      clojure
-     ruby
      html
      (python :variables
              python-enable-yapf-format-on-save t
@@ -69,7 +66,6 @@ values."
      ivy
      themes-megapack
      syntax-checking
-     docker
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -77,7 +73,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets)
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(smartparens)
+   dotspacemacs-excluded-packages '(smartparens company-tern)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
