@@ -71,7 +71,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets ox-hugo)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens company-tern)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -127,14 +127,14 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         dracula
+                         sanityinc-tomorrow-blue
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Operator Mono"
-                               :size 32
+                               :size 12.0
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
@@ -305,6 +305,10 @@ you should place your code here."
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
+  (use-package ox-hugo
+    :ensure t          ;Auto-install the package from Melpa (optional)
+    :after ox)
+
   ;; literate programming using org and babel
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -375,9 +379,11 @@ you should place your code here."
   ;; Step1. Set up a keyboard shorcut to go to the main org file
   (global-set-key (kbd "C-c o")
                   (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
+
   ;; Step2. Use org-refile to file or jump to headings
   (setq org-agenda-files '("~/Dropbox/org"))
   (setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
+  (setq org-directory "~/Dropbox/org")
 
   ;; Step3. Use org-capture
   (setq org-default-notes-file "/home/lv/Dropbox/org/organizer.org")
@@ -391,6 +397,31 @@ you should place your code here."
                  "* %? %^g\n%U\n")
                 ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
                  "* TODO %?\n%U\n%a\n"))))
+
+  ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
+  (with-eval-after-load 'org-capture
+    (defun org-hugo-new-subtree-post-capture-template ()
+      "Returns `org-capture' template string for new Hugo post. See `org-capture-templates' for more information."
+      (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
+             (fname (org-hugo-slug title)))
+        (mapconcat #'identity
+                   `(
+                     ,(concat "* TODO " title)
+                     ":PROPERTIES:"
+                     ,(concat ":EXPORT_FILE_NAME: " fname)
+                     ":END:"
+                     "%?\n")          ;Place the cursor here finally
+                   "\n")))
+
+    (add-to-list 'org-capture-templates
+                 '("h"                ;`org-capture' binding + h
+                   "Hugo post"
+                   entry
+                   ;; It is assumed that below file is present in `org-directory'
+                   ;; and that it has a "Blog Ideas" heading. It can even be a
+                   ;; symlink pointing to the actual location of all-posts.org!
+                   (file+olp "all-posts.org" "Posts")
+                   (function org-hugo-new-subtree-post-capture-template))))
   ;; Step5. Use deft to quickly browse through the notes
   (setq deft-directory "~/Dropbox/org")
   (setq deft-extension "org")
