@@ -1,6 +1,5 @@
 
 set $mod Mod4
-font pango:DejaVu 9
 floating_modifier $mod
 
 # start a terminal
@@ -66,9 +65,9 @@ bindsym $mod+a focus parent
 gaps inner 10
 gaps outer 0
 
-set $workspace1 "1 "
-set $workspace2 "2 "
-set $workspace3 "3 "
+set $workspace1 "1"
+set $workspace2 "2"
+set $workspace3 "3"
 set $workspace4 "4"
 set $workspace5 "5"
 set $workspace6 "6"
@@ -131,6 +130,12 @@ bindsym $mod+Shift+e mode "$mode_system"
 bindsym $mod+F11 exec amixer set Master 5%-
 bindsym $mod+F12 exec amixer set Master 5%+
 
+# backlight
+bindsym XF86MonBrightnessUp exec xbacklight -inc 5 # increase screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 5 # decrease screen brightness
+
+# calender
+bindsym $mod+c exec gsimplecal
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -161,7 +166,7 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status --config ~/.config/i3/status.conf
+        status_command i3status
         tray_output primary
         font pango:DejaVu, Awesome 9
         colors {
@@ -177,11 +182,10 @@ bar {
 }
 
 # startup apps
-#exec nitrogen --restore
+exec nitrogen --restore
 exec /usr/bin/nm-applet
 exec volumeicon
-#exec dropboxd
-exec compton -b
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 & eval $(gnome-keyring-daemon -s --components=pkcs11,secrets,ssh,gpg) &
-
 exec wal -R
+exec blueman-applet
+exec redshift
+exec dropbox
