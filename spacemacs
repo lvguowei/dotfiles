@@ -36,6 +36,7 @@ values."
      (spell-checking :variables spell-checking-enable-by-default nil)
      ibuffer
      sql
+     kotlin
      better-defaults
      clojure
      html
@@ -47,7 +48,8 @@ values."
      markdown
      (colors :variables
              colors-enable-nyan-cat-progress-bar t)
-     org
+     (org :variables
+          org-enable-hugo-support t)
     (shell :variables
             shell-default-shell 'eshell
             shell-default-height 30
@@ -66,12 +68,13 @@ values."
      ivy
      themes-megapack
      syntax-checking
+     gnus
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets ox-hugo)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets dired-quick-sort ob-kotlin)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens company-tern)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -134,7 +137,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Operator Mono"
-                               :size 12.0
+                               :size 14.0
                                :weight light
                                :width normal
                                :powerline-scale 1.4)
@@ -280,6 +283,10 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; dired-quick-sort setup
+  (require 'dired-quick-sort)
+  (dired-quick-sort-setup)
+
   ;; set transparency
   (spacemacs/disable-transparency)
   (spacemacs/toggle-transparency)
@@ -305,10 +312,6 @@ you should place your code here."
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
-  (use-package ox-hugo
-    :ensure t          ;Auto-install the package from Melpa (optional)
-    :after ox)
-
   ;; literate programming using org and babel
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -322,6 +325,7 @@ you should place your code here."
      (shell . t)
      (plantuml . t)
      (js . t)
+     (kotlin . t)
      (ruby . t)))
 
   ;; Clojure
@@ -532,6 +536,38 @@ you should place your code here."
   ;; configure jsx-tide checker to run after your default jsx checker
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+
+  ;; Get email, and store in nnml
+  (setq gnus-secondary-select-methods
+        '(
+          (nnimap "gmail"
+                  (nnimap-address
+                   "imap.gmail.com")
+                  (nnimap-server-port 993)
+                  (nnimap-stream ssl))
+          ))
+
+  ;; Send email via Gmail:
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-default-smtp-server "smtp.gmail.com")
+
+  ;; Archive outgoing email in Sent folder on imap.gmail.com:
+  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
+        gnus-message-archive-group "[Gmail]/Sent Mail")
+
+  ;; Set return email address based on incoming email address
+  (setq gnus-posting-styles
+        '(((header "to" "address@outlook.com")
+           (address "address@outlook.com"))
+          ((header "to" "address@gmail.com")
+           (address "address@gmail.com"))))
+
+  ;; Store email in ~/gmail directory
+  (setq nnml-directory "~/gmail")
+  (setq message-directory "~/gmail")
+
+  (setq smtpmail-smtp-service 587)
+
 )
 
 
