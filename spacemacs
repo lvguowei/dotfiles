@@ -37,6 +37,7 @@ values."
      ibuffer
      sql
      kotlin
+     unicode-fonts
      better-defaults
      clojure
      html
@@ -44,6 +45,7 @@ values."
              python-enable-yapf-format-on-save t
              python-sort-imports-on-save nil)
      emacs-lisp
+     common-lisp
      git
      markdown
      (colors :variables
@@ -69,12 +71,14 @@ values."
      themes-megapack
      syntax-checking
      gnus
+     epub
+     racket
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets dired-quick-sort ob-kotlin)
+   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets dired-quick-sort ob-kotlin poet-theme geiser (ob-racket :location (recipe :fetcher github :repo "DEADB17/ob-racket")))
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens company-tern)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -136,11 +140,11 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Operator Mono"
-                               :size 14.0
+   dotspacemacs-default-font '("Source Code Pro"
+                               :size 16.0
                                :weight light
                                :width normal
-                               :powerline-scale 1.4)
+                               :powerline-scale 1.5)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -263,6 +267,8 @@ values."
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
+
+   dotspacemacs-mode-line-theme 'vanilla
    ))
 
 (defun dotspacemacs/user-init ()
@@ -305,19 +311,29 @@ you should place your code here."
         org-src-tab-acts-natively t
         org-src-fontify-natively t)
   (require 'ox-latex)
-  (add-to-list 'org-latex-packages-alist '("" "minted"))
-  (setq org-latex-listings 'minted)
-  (setq org-latex-pdf-process
+  (setq org-latex-listings 'minted
+        org-latex-packages-alist '(("" "minted"))
+        org-latex-pdf-process
         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (setq org-latex-minted-options '(("breaklines" "true")
+                                   ("breakanywhere" "true")))
 
   ;; literate programming using org and babel
+  (setq geiser-default-implementation 'racket)
+
+  (use-package ob-racket
+    :after org
+    :pin manual
+    :config
+    (append '((racket . t) (scribble . t)) org-babel-load-languages))
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (C . t)
      (scheme . t)
+     (racket . t)
      (python . t)
      (ditaa . t)
      (clojure . t)
@@ -326,6 +342,7 @@ you should place your code here."
      (plantuml . t)
      (js . t)
      (kotlin . t)
+     (lisp . t)
      (ruby . t)))
 
   ;; Clojure
@@ -333,6 +350,8 @@ you should place your code here."
   (add-hook 'clojure-mode-hook 'enable-paredit-mode)
   (add-hook 'cider-repl-mode-hook 'paredit-mode)
   (setq cider-repl-pop-to-buffer-on-connect t)
+  (setq ob-clojure-literate-auto-jackin-p t)
+
 
   ;; Hungry delete mode
   (load "cc-mode")
@@ -380,6 +399,8 @@ you should place your code here."
   (global-set-key (kbd "<C-right>") 'enlarge-window-horizontally)
 
   ;; Take notes more effectively with org mode
+  (setq org-log-into-drawer t)
+
   ;; Step1. Set up a keyboard shorcut to go to the main org file
   (global-set-key (kbd "C-c o")
                   (lambda () (interactive) (find-file "/home/lv/Dropbox/org/organizer.org")))
@@ -396,11 +417,11 @@ you should place your code here."
   ;; Step4. Define your own org-capture-template
   (setq org-capture-templates
         (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
-                 "* TODO %?\n%U\n%a\n")
+                 "* TODO %?\n%U\n")
                 ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
                  "* %? %^g\n%U\n")
                 ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
-                 "* TODO %?\n%U\n%a\n"))))
+                 "* TODO %?\n%U\n"))))
 
   ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
   (with-eval-after-load 'org-capture
@@ -439,8 +460,8 @@ you should place your code here."
   (global-set-key (kbd "C-c a") 'org-agenda)
 
   ;; Powerline settings
-  (setq powerline-default-separator 'wave)
-  (spaceline-compile)
+  ;(setq powerline-default-separator 'arrow)
+  ;(spaceline-compile)
 
   ;; Bind clang-format-buffer to tab on the c++-mode only:
   (add-hook 'c++-mode-hook 'clang-format-bindings)
@@ -545,6 +566,9 @@ you should place your code here."
                    "imap.gmail.com")
                   (nnimap-server-port 993)
                   (nnimap-stream ssl))
+          (nntp "news.eternal-september.org")
+          (nntp "nntp.aioe.org")
+          (nntp "news.gwene.org")
           ))
 
   ;; Send email via Gmail:
@@ -567,6 +591,16 @@ you should place your code here."
   (setq message-directory "~/gmail")
 
   (setq smtpmail-smtp-service 587)
+
+  (setq inferior-lisp-program "clisp")
+
+  ;; Poet theme setup
+  (add-hook 'text-mode-hook
+            (lambda ()
+              (variable-pitch-mode 1)))
+  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 130)
+  (set-face-attribute 'fixed-pitch nil :family "DejaVu Sans Mono")
+  (set-face-attribute 'variable-pitch nil :family "Source Code Pro")
 
 )
 
