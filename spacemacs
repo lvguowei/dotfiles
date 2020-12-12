@@ -52,16 +52,17 @@ values."
              colors-enable-nyan-cat-progress-bar t)
      (org :variables
           org-enable-hugo-support t)
-    (shell :variables
+     (shell :variables
             shell-default-shell 'eshell
             shell-default-height 30
             shell-default-position 'bottom)
      version-control
      ibuffer
      emoji
-     restclient
+     (restclient :variables
+                 restclient-use-org t)
      (c-c++ :variables
-            ;c-c++-default-mode-for-headers 'c++-mode
+                                        ;c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-clang-support t)
      semantic
      latex
@@ -73,12 +74,13 @@ values."
      gnus
      epub
      racket
+     (plantuml :variables plantuml-jar-path "~/plantuml.jar" org-plantuml-jar-path "~/plantuml.jar")
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets dired-quick-sort ob-kotlin poet-theme geiser (ob-racket :location (recipe :fetcher github :repo "DEADB17/ob-racket")))
+   dotspacemacs-additional-packages '(counsel-jq ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets dired-quick-sort ob-kotlin poet-theme geiser (ob-racket :location (recipe :fetcher github :repo "DEADB17/ob-racket")))
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(smartparens company-tern)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -134,7 +136,7 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         sanityinc-tomorrow-blue
+                         doom-monokai-pro
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -142,7 +144,7 @@ values."
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
                                :size 16.0
-                               :weight light
+                               :weight ExtraLight
                                :width normal
                                :powerline-scale 1.5)
    ;; The leader key
@@ -297,11 +299,11 @@ you should place your code here."
   (spacemacs/disable-transparency)
   (spacemacs/toggle-transparency)
 
-  (require 'pyim)
-  (require 'pyim-basedict) ; 拼音词库设置，五笔用户 *不需要* 此行设置
-  (pyim-basedict-enable)   ; 拼音词库，五笔用户 *不需要* 此行设置
-  (setq default-input-method "pyim")
-  (global-set-key (kbd "C-\\") 'toggle-input-method)
+                                        ;(require 'pyim)
+                                        ;(require 'pyim-basedict) ; 拼音词库设置，五笔用户 *不需要* 此行设置
+                                        ;(pyim-basedict-enable)   ; 拼音词库，五笔用户 *不需要* 此行设置
+                                        ;(setq default-input-method "pyim")
+                                        ;(global-set-key (kbd "C-\\") 'toggle-input-method)
 
   ;; org
   (eval-after-load "org"
@@ -380,7 +382,7 @@ you should place your code here."
 
   (setq show-paren-style 'expression)
   (show-paren-mode t)
-  ;(set-face-background 'show-paren-match "#000")
+                                        ;(set-face-background 'show-paren-match "#000")
 
   ;; Expand region
   (global-set-key (kbd "C-=") 'er/expand-region)
@@ -423,6 +425,8 @@ you should place your code here."
                 ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
                  "* TODO %?\n%U\n"))))
 
+  '(org-clock-into-drawer "CLOCKING")
+
   ;; Populates only the EXPORT_FILE_NAME property in the inserted headline.
   (with-eval-after-load 'org-capture
     (defun org-hugo-new-subtree-post-capture-template ()
@@ -460,8 +464,8 @@ you should place your code here."
   (global-set-key (kbd "C-c a") 'org-agenda)
 
   ;; Powerline settings
-  ;(setq powerline-default-separator 'arrow)
-  ;(spaceline-compile)
+                                        ;(setq powerline-default-separator 'arrow)
+                                        ;(spaceline-compile)
 
   ;; Bind clang-format-buffer to tab on the c++-mode only:
   (add-hook 'c++-mode-hook 'clang-format-bindings)
@@ -592,6 +596,8 @@ you should place your code here."
 
   (setq smtpmail-smtp-service 587)
 
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  ;; Replace "sbcl" with the path to your implementation
   (setq inferior-lisp-program "clisp")
 
   ;; Poet theme setup
@@ -602,8 +608,7 @@ you should place your code here."
   (set-face-attribute 'fixed-pitch nil :family "DejaVu Sans Mono")
   (set-face-attribute 'variable-pitch nil :family "Source Code Pro")
 
-)
-
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
