@@ -82,7 +82,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(counsel-jq ag paren deft buffer-move swiper counsel sicp prettier-js pyim all-the-icons rjsx-mode tide graphql-mode yasnippet-snippets dired-quick-sort ob-kotlin poet-theme geiser (ob-racket :location (recipe :fetcher github :repo "DEADB17/ob-racket")))
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(smartparens company-tern)
+   dotspacemacs-excluded-packages '(smartparens company-tern evil-magit)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -382,7 +382,6 @@ you should place your code here."
 
   (setq show-paren-style 'expression)
   (show-paren-mode t)
-                                        ;(set-face-background 'show-paren-match "#000")
 
   ;; Expand region
   (global-set-key (kbd "C-=") 'er/expand-region)
@@ -463,10 +462,6 @@ you should place your code here."
   ;; Step6. Agenda view
   (global-set-key (kbd "C-c a") 'org-agenda)
 
-  ;; Powerline settings
-                                        ;(setq powerline-default-separator 'arrow)
-                                        ;(spaceline-compile)
-
   ;; Bind clang-format-buffer to tab on the c++-mode only:
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
@@ -477,11 +472,6 @@ you should place your code here."
   (global-set-key (kbd "<C-S-down>") 'buf-move-down)
   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
   (global-set-key (kbd "<C-S-right>") 'buf-move-right)
-
-  (with-eval-after-load 'web-mode
-    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
-    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
 
   ;; swiper and ivy config
   (ivy-mode 1)
@@ -505,108 +495,11 @@ you should place your code here."
 
   (setq kill-whole-line t)
 
-  ;; JS configs
-  (add-hook 'js2-mode-hook 'prettier-js-mode)
-  (add-hook 'web-mode-hook 'prettier-js-mode)
 
-  (setq-default indent-tabs-mode nil)
-  (setq-default tab-width 2)
-  (setq-default js2-basic-offset 2
-                js-indent-level 2)
-  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
-
-  (defun setup-tide-mode ()
-    (interactive)
-    (tide-setup)
-    (flycheck-mode +1)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1)
-    ;; company is an optional dependency. You have to
-    ;; install it separately via package-install
-    ;; `M-x package-install [ret] company`
-    (company-mode +1))
-
-  ;; aligns annotation to the right hand side
-  (setq company-tooltip-align-annotations t)
-
-  ;; formats the buffer before saving
-  (add-hook 'before-save-hook 'tide-format-before-save)
-
-  (add-hook 'typescript-mode-hook #'setup-tide-mode)
-
-  (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil :indentSize 2 :tabSize 2))
-
-  (require 'web-mode)
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-  (add-hook 'web-mode-hook
-            (lambda ()
-              (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                (setup-tide-mode))))
-  (require 'flycheck)
-  (require 'tide)
-  ;; enable typescript-tslint checker
-  (flycheck-add-mode 'typescript-tslint 'web-mode)
-
-  (add-hook 'js2-mode-hook #'setup-tide-mode)
-  ;; configure javascript-tide checker to run after your default javascript checker
-  (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
-
-  (require 'web-mode)
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-  (add-hook 'web-mode-hook
-            (lambda ()
-              (when (string-equal "jsx" (file-name-extension buffer-file-name))
-                (setup-tide-mode))))
-  ;; configure jsx-tide checker to run after your default jsx checker
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
-
-  ;; Get email, and store in nnml
-  (setq gnus-secondary-select-methods
-        '(
-          (nnimap "gmail"
-                  (nnimap-address
-                   "imap.gmail.com")
-                  (nnimap-server-port 993)
-                  (nnimap-stream ssl))
-          (nntp "news.eternal-september.org")
-          (nntp "nntp.aioe.org")
-          (nntp "news.gwene.org")
-          ))
-
-  ;; Send email via Gmail:
-  (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-default-smtp-server "smtp.gmail.com")
-
-  ;; Archive outgoing email in Sent folder on imap.gmail.com:
-  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
-        gnus-message-archive-group "[Gmail]/Sent Mail")
-
-  ;; Set return email address based on incoming email address
-  (setq gnus-posting-styles
-        '(((header "to" "address@outlook.com")
-           (address "address@outlook.com"))
-          ((header "to" "address@gmail.com")
-           (address "address@gmail.com"))))
-
-  ;; Store email in ~/gmail directory
-  (setq nnml-directory "~/gmail")
-  (setq message-directory "~/gmail")
-
-  (setq smtpmail-smtp-service 587)
-
-  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  ;;(load (expand-file-name "~/quicklisp/slime-helper.el"))
   ;; Replace "sbcl" with the path to your implementation
   (setq inferior-lisp-program "clisp")
 
-  ;; Poet theme setup
-  (add-hook 'text-mode-hook
-            (lambda ()
-              (variable-pitch-mode 1)))
-  (set-face-attribute 'default nil :family "DejaVu Sans Mono" :height 130)
-  (set-face-attribute 'fixed-pitch nil :family "DejaVu Sans Mono")
-  (set-face-attribute 'variable-pitch nil :family "Source Code Pro")
 
   )
 
