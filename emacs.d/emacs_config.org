@@ -1,4 +1,3 @@
-
 * Interface Tweaks
   #+BEGIN_SRC emacs-lisp
     (setq inhibit-startup-message t)
@@ -10,11 +9,37 @@
     (setq visible-bell t)
     (defalias 'yes-or-no-p 'y-or-n-p)
   #+END_SRC
+* File Browsing
+  #+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons-dired
+    :init
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+  #+END_SRC
+* Window Management
+** Scaling
+   #+BEGIN_SRC emacs-lisp
+   (use-package default-text-scale
+     :defer 1
+     :config
+     (default-text-scale-mode))
+   #+END_SRC
+** Window Selection
+   #+BEGIN_SRC emacs-lisp
+     (use-package ace-window
+       :bind (("C-x o" . ace-window))
+       :custom
+       (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+       :config
+       (ace-window-display-mode 1))
+   #+END_SRC
 * Editing Configuration
 ** Common
    #+BEGIN_SRC emacs-lisp
    (setq-default tab-width 2)
    (setq-default indent-tabs-mode nil)
+
+   (show-paren-mode)
+   (setq show-paren-style 'expression)
    #+END_SRC
 ** Smartparens
    #+BEGIN_SRC emacs-lisp
@@ -24,8 +49,16 @@
    #+END_SRC
 ** Folding
    #+BEGIN_SRC emacs-lisp
-  (use-package origami)
+  (use-package origami
+    :config
+    (global-origami-mode t)
+    :bind (("C-M-f" . origami-toggle-node)))
    #+END_SRC
+** Rainbow Delimiters
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
 * Org
   #+BEGIN_SRC emacs-lisp
   (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -60,8 +93,10 @@
     (use-package counsel)
 
     (use-package ivy
+      :bind (("C-s" . swiper))
       :config (ivy-mode 1))
   #+END_SRC
+
 * Emoji
   #+BEGIN_SRC emacs-lisp
   (use-package emojify
@@ -69,7 +104,19 @@
     :commands emojify-mode)
   #+END_SRC
 
-
-
-
-
+* Programming
+** Auto Complete
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :bind (("M-p" . company-complete-common-or-cycle))
+  :init 
+  (add-hook 'after-init-hook 'global-company-mode)
+  :config
+  (setq company-idel-delay 0))
+#+END_SRC
+** Flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :config
+  (global-flycheck-mode t))
+#+END_SRC
