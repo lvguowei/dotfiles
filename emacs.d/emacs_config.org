@@ -107,16 +107,24 @@
 * Programming
 ** Auto Complete
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :bind (("M-p" . company-complete-common-or-cycle))
-  :init 
-  (add-hook 'after-init-hook 'global-company-mode)
-  :config
-  (setq company-idel-delay 0))
-#+END_SRC
-** Flycheck
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :config
-  (global-flycheck-mode t))
+  (use-package company
+    :bind (("M-p" . company-complete-common-or-cycle))
+    :init
+    (add-hook 'after-init-hook 'global-company-mode)
+    :config
+    (setq company-idel-delay 0))
+
+  (use-package company-irony
+    :config
+    (require 'company)
+    (add-to-list 'company-backends 'company-irony))
+
+   (use-package company-c-headers
+     :config
+     (add-to-list 'company-backends 'company-c-headers))
+
+  (use-package irony
+    :config
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'c++-mode-hook 'irony-mode))
 #+END_SRC
