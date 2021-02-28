@@ -152,7 +152,9 @@
   #+END_SRC
 * Undo
   #+BEGIN_SRC emacs-lisp
-  (use-package undo-tree)
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode 1))
   #+END_SRC
 * Icons And Fonts
   #+BEGIN_SRC emacs-lisp
@@ -210,6 +212,12 @@
     :config
     (add-hook 'c-mode-hook 'irony-mode)
     (add-hook 'c++-mode-hook 'irony-mode))
+
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous))
 #+END_SRC
 ** Web
 #+BEGIN_SRC emacs-lisp
@@ -219,4 +227,29 @@
 #+BEGIN_SRC emacs-lisp
 (use-package restclient)
 (use-package ob-restclient)
+#+END_SRC
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :config
+  (yas-global-mode))
+
+(use-package yasnippet-snippets)
+
+;; Enable yasnippet for company
+(defvar company-mode/enable-yas t "Enable yasnippet for all backends.")
+(defun company-mode/backend-with-yas (backend)
+  (if (or (not company-mode/enable-yas) (and (listp backend)    (member 'company-yasnippet backend)))
+  backend
+(append (if (consp backend) backend (list backend))
+        '(:with company-yasnippet))))
+(setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
+#+END_SRC
+* Terminal
+#+BEGIN_SRC emacs-lisp
+(use-package eshell-toggle
+  :quelpa
+  (eshell-toggle :repo "4DA/eshell-toggle" :fetcher github :version original)
+  :bind
+  ("C-x '" . eshell-toggle))
 #+END_SRC
