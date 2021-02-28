@@ -69,6 +69,13 @@
    #+BEGIN_SRC emacs-lisp
    (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
    #+END_SRC
+** Beautify org
+#+BEGIN_SRC emacs-lisp
+(use-package org-superstar
+  :ensure t
+  :init
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
+#+END_SRC
 ** Babel
    #+BEGIN_SRC emacs-lisp
      (use-package ob-kotlin)
