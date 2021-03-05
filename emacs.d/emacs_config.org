@@ -188,17 +188,20 @@
       :bind (("C-s" . swiper))
       :config (ivy-mode 1))
   #+END_SRC
-
 * Emoji
   #+BEGIN_SRC emacs-lisp
   (use-package emojify
     :hook (erc-mode . emojify-mode)
     :commands emojify-mode)
   #+END_SRC
-
 * Programming
 ** C/C++
 #+BEGIN_SRC emacs-lisp
+  (use-package eglot :ensure t)
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
+  (add-hook 'c-mode-hook 'eglot-ensure)
+  (add-hook 'c++-mode-hook 'eglot-ensure)
+
   (use-package company
     :bind (("M-p" . company-complete-common-or-cycle))
     :init
@@ -211,9 +214,9 @@
     (require 'company)
     (add-to-list 'company-backends 'company-irony))
 
-   (use-package company-c-headers
-     :config
-     (add-to-list 'company-backends 'company-c-headers))
+  (use-package company-c-headers
+    :config
+    (add-to-list 'company-backends 'company-c-headers))
 
   (use-package irony
     :config
@@ -252,11 +255,24 @@
         '(:with company-yasnippet))))
 (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
 #+END_SRC
+** Flycheck
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck
+       :ensure t
+       :init
+       (global-flycheck-mode t))
+   #+END_SRC
 * Terminal
-#+BEGIN_SRC emacs-lisp
-(use-package eshell-toggle
-  :quelpa
-  (eshell-toggle :repo "4DA/eshell-toggle" :fetcher github :version original)
-  :bind
-  ("C-x '" . eshell-toggle))
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package eshell-toggle
+      :quelpa
+      (eshell-toggle :repo "4DA/eshell-toggle" :fetcher github :version original)
+      :bind
+      ("C-x '" . eshell-toggle))
+  #+END_SRC
+* PDF
+  #+BEGIN_SRC emacs-lisp
+    (use-package pdf-tools
+      :config
+      (pdf-tools-install))
+  #+END_SRC
