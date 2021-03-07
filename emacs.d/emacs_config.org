@@ -1,5 +1,9 @@
 * Interface Tweaks
   #+BEGIN_SRC emacs-lisp
+    ;; Fix some keyboard mapping problem
+    (define-key key-translation-map [dead-grave] "`")
+    (define-key key-translation-map [dead-acute] "'")
+
     (setq inhibit-startup-message t)
     (scroll-bar-mode -1)        ; Disable visible scrollbar
     (tool-bar-mode -1)          ; Disable the toolbar
@@ -229,18 +233,32 @@
    #+BEGIN_SRC emacs-lisp
      (use-package eldoc-box)
    #+END_SRC
+** LSP
+   #+BEGIN_SRC emacs-lisp
+     (use-package lsp-mode
+       :init
+       ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+       (setq lsp-keymap-prefix "C-c l")
+       :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+              (c-mode . lsp)
+              (java-mode . lsp)
+              ;; if you want which-key integration
+              (lsp-mode . lsp-enable-which-key-integration))
+       :commands lsp)
+
+     (use-package lsp-ui :commands lsp-ui-mode)
+
+     (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+
+     (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+     (use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
+   #+END_SRC
 ** C/C++
 #+BEGIN_SRC emacs-lisp
-  (use-package eglot)
-  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd-10"))
-  (add-hook 'c-mode-hook 'eglot-ensure)
-  (add-hook 'c++-mode-hook 'eglot-ensure)
-  (add-hook 'eglot--managed-mode-hook #'eldoc-box-hover-mode t)
-
   (use-package company-c-headers
     :config
     (add-to-list 'company-backends 'company-c-headers))
-
 #+END_SRC
 ** Web
 #+BEGIN_SRC emacs-lisp
