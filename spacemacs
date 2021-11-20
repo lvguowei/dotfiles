@@ -36,6 +36,7 @@ values."
      (spell-checking :variables spell-checking-enable-by-default nil)
      ibuffer
      sql
+     lua
      kotlin
      unicode-fonts
      better-defaults
@@ -47,7 +48,7 @@ values."
      emacs-lisp
      common-lisp
      git
-     markdown
+     (markdown :variables markdown-live-preview-engine 'vmd)
      (colors :variables
              colors-enable-nyan-cat-progress-bar t)
      (org :variables
@@ -126,7 +127,7 @@ values."
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects)
+   ;dotspacemacs-startup-lists '(recents projects)
    ;; Number of recent files to show in the startup buffer. Ignored if
    ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
    dotspacemacs-startup-recent-list-size 5
@@ -290,6 +291,11 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  (when (string= system-type "darwin")
+    (setq dired-use-ls-dired t
+          insert-directory-program "/usr/local/bin/gls"
+          dired-listing-switches "-aBhl --group-directories-first"))
 
   ;; dired-quick-sort setup
   (require 'dired-quick-sort)
@@ -500,7 +506,17 @@ you should place your code here."
   ;; Replace "sbcl" with the path to your implementation
   (setq inferior-lisp-program "clisp")
 
+  ;; sort directories first
 
+  (setq insert-directory-program "/usr/local/bin/gls")
+
+  (setq dired-listing-switches "-aBhl --group-directories-first")
+
+  (setenv "PATH" "/Library/TeX/texbin/:$PATH" t)
+
+  (use-package ox-moderncv
+    :load-path "/Users/maas/Projects/Home/org-cv/"
+    :init (require 'ox-moderncv))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
