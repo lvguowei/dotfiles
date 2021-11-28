@@ -1,0 +1,287 @@
+* Interface Tweaks
+  #+BEGIN_SRC emacs-lisp
+    ;; Fix some keyboard mapping problem
+    (define-key key-translation-map [dead-grave] "`")
+    (define-key key-translation-map [dead-acute] "'")
+
+    (setq inhibit-startup-message t)
+    (scroll-bar-mode -1)        ; Disable visible scrollbar
+    (tool-bar-mode -1)          ; Disable the toolbar
+    (tooltip-mode -1)           ; Disable tooltips
+    (set-fringe-mode 10)        ; Give some breathing room
+    (menu-bar-mode -1)          ; Disable the menu bar
+    (setq visible-bell t)
+    (defalias 'yes-or-no-p 'y-or-n-p)
+  #+END_SRC
+* Mac tweaks
+
+  #+BEGIN_SRC emacs-lisp
+  (setq mac-option-modifier nil
+      mac-command-modifier 'meta
+      x-select-enable-clipboard t)
+  #+END_SRC
+
+* File Browsing
+  #+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons-dired
+    :init
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+  #+END_SRC
+* Window Management
+** Scaling
+   #+BEGIN_SRC emacs-lisp
+   (use-package default-text-scale
+     :defer 1
+     :config
+     (default-text-scale-mode))
+   #+END_SRC
+** Window Selection
+   #+BEGIN_SRC emacs-lisp
+     (use-package ace-window
+       :bind (("C-x o" . ace-window))
+       :custom
+       (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+       :config
+       (ace-window-display-mode 1))
+   #+END_SRC
+* Editing Configuration
+** Common
+   #+BEGIN_SRC emacs-lisp
+     (setq-default tab-width 2)
+     (setq-default indent-tabs-mode nil)
+
+     (show-paren-mode)
+     (setq show-paren-style 'expression)
+
+     ;; Hungry delete mode
+     (load "cc-mode")
+     (global-set-key (kbd "C-<delete>") 'c-hungry-delete-forward)
+     (global-set-key (kbd "C-<backspace>") 'c-hungry-delete-backwards)
+   #+END_SRC
+** Smartparens
+   #+BEGIN_SRC emacs-lisp
+     (use-package smartparens
+       :config
+       (smartparens-global-mode t))
+   #+END_SRC
+** Folding
+   #+BEGIN_SRC emacs-lisp
+  (use-package origami
+    :config
+    (global-origami-mode t)
+    :bind (("C-M-f" . origami-toggle-node)))
+   #+END_SRC
+** Rainbow Delimiters
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+#+END_SRC
+* Org
+** Add the org elpa
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+   #+END_SRC
+** Beautify org
+#+BEGIN_SRC emacs-lisp
+(use-package org-superstar
+  :ensure t
+  :init
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
+#+END_SRC
+** Babel
+   #+BEGIN_SRC emacs-lisp
+     (use-package ob-kotlin)
+
+     (eval-after-load "org"
+       '(require 'ox-md nil t))
+
+     (require 'ox-latex)
+
+     (setq org-latex-listings 'minted
+           org-latex-packages-alist '(("" "minted"))
+           org-latex-pdf-process
+           '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+             "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+     (setq org-latex-minted-options '(("breaklines" "true")
+                                      ("breakanywhere" "true")))
+
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (C . t)
+        (scheme . t)
+        (python . t)
+        (ditaa . t)
+        (clojure . t)
+        (java . t)
+        (shell . t)
+        (plantuml . t)
+        (js . t)
+        (kotlin . t)
+        (lisp . t)
+        (restclient . t)))
+   #+END_SRC
+** Workflow
+  #+BEGIN_SRC emacs-lisp
+    ;; Deft
+    (use-package deft)
+    ;; Take notes more effectively with org mode
+    (setq org-log-into-drawer t)
+
+    ;; Step1. Set up a keyboard shorcut to go to the main org file
+    (global-set-key (kbd "C-c o")
+                    (lambda () (interactive) (find-file "/home/lvguowei/Dropbox/org/organizer.org")))
+
+    ;; Step2. Use org-refile to file or jump to headings
+    (setq org-agenda-files '("~/Dropbox/org"))
+    (setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
+    (setq org-directory "~/Dropbox/org")
+
+    ;; Step3. Use org-capture
+    (setq org-default-notes-file "/home/lvguowei/Dropbox/org/organizer.org")
+    (define-key global-map "\C-cc" 'org-capture)
+
+    ;; Step4. Define your own org-capture-template
+    (setq org-capture-templates
+          (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
+                   "* TODO %?\n%U\n")
+                  ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
+                   "* %? %^g\n%U\n")
+                  ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
+                   "* TODO %?\n%U\n"))))
+
+    '(org-clock-into-drawer "CLOCKING")
+
+    ;; Step5. Use deft to quickly browse through the notes
+    (setq deft-directory "~/Dropbox/org")
+    (setq deft-extension "org")
+    (setq deft-text-mode 'org-mode)
+    (setq deft-use-filename-as-title t)
+    (setq deft-use-filter-string-for-filename t)
+    (setq deft-auto-save-interval 0)
+    (global-set-key (kbd "C-c d") 'deft)
+
+    ;; Step6. Agenda view
+    (global-set-key (kbd "C-c a") 'org-agenda)
+  #+END_SRC
+* Magit
+  #+BEGIN_SRC emacs-lisp
+  (use-package magit)
+  #+END_SRC
+* Undo
+  #+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode 1))
+  #+END_SRC
+* Icons And Fonts
+  #+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
+  #+END_SRC
+* Theme
+  #+BEGIN_SRC emacs-lisp
+  (use-package doom-themes :defer t)
+  (load-theme 'doom-palenight t)
+  (doom-themes-visual-bell-config)
+  #+END_SRC
+* Mode Line
+  #+BEGIN_SRC emacs-lisp
+;; You must run (all-the-icons-install-fonts) one time after installing this package!
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
+  #+END_SRC
+* Completion
+  #+BEGIN_SRC emacs-lisp
+    (use-package swiper)
+    (use-package counsel)
+
+    (use-package ivy
+      :bind (("C-s" . swiper))
+      :config (ivy-mode 1))
+  #+END_SRC
+* Emoji
+  #+BEGIN_SRC emacs-lisp
+  (use-package emojify
+    :hook (erc-mode . emojify-mode)
+    :commands emojify-mode)
+  #+END_SRC
+* Programming
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :config
+  (yas-global-mode))
+
+(use-package yasnippet-snippets)
+#+END_SRC
+** Flycheck
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck
+       :ensure t
+       :init
+       (global-flycheck-mode t))
+   #+END_SRC
+** Company
+   #+BEGIN_SRC emacs-lisp
+     (use-package company
+         :bind (("M-p" . company-complete-common-or-cycle))
+         :init
+         (add-hook 'after-init-hook 'global-company-mode)
+         :config
+         (setq company-idel-delay 0))
+
+     (with-eval-after-load 'company
+         (define-key company-active-map (kbd "M-n") nil)
+         (define-key company-active-map (kbd "M-p") nil)
+         (define-key company-active-map (kbd "C-n") #'company-select-next)
+         (define-key company-active-map (kbd "C-p") #'company-select-previous))
+   #+END_SRC
+** Eldoc
+   #+BEGIN_SRC emacs-lisp
+     (use-package eldoc-box)
+   #+END_SRC
+** LSP
+   #+BEGIN_SRC emacs-lisp
+     (use-package lsp-mode
+       :init
+       ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+       (setq lsp-keymap-prefix "C-c l")
+       :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+              (c-mode . lsp)
+              (java-mode . lsp)
+              ;; if you want which-key integration
+              (lsp-mode . lsp-enable-which-key-integration))
+       :commands lsp)
+
+     (use-package lsp-ui :commands lsp-ui-mode)
+
+     (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+
+     (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+     (use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
+   #+END_SRC
+** C/C++
+#+BEGIN_SRC emacs-lisp
+  (use-package company-c-headers
+    :config
+    (add-to-list 'company-backends 'company-c-headers))
+#+END_SRC
+** Web
+#+BEGIN_SRC emacs-lisp
+(use-package web-beautify)
+#+END_SRC
+** Restclient
+#+BEGIN_SRC emacs-lisp
+(use-package restclient)
+(use-package ob-restclient)
+#+END_SRC
+* Terminal
+  #+BEGIN_SRC emacs-lisp
+    (use-package eshell-toggle
+      :quelpa
+      (eshell-toggle :repo "4DA/eshell-toggle" :fetcher github :version original)
+      :bind
+      ("C-x '" . eshell-toggle))
+  #+END_SRC
