@@ -13,6 +13,24 @@
     (setq visible-bell t)
     (defalias 'yes-or-no-p 'y-or-n-p)
   #+END_SRC
+* Env
+  #+BEGIN_SRC emacs-lisp
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match
+that used by the user's shell.
+
+This is particularly useful under Mac OS X and macOS, where GUI
+apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string
+			  "[ \t\n]*$" "" (shell-command-to-string
+					  "$SHELL --login -c 'echo $PATH'"
+						    ))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH)
+  #+END_SRC
 * Mac tweaks
 
   #+BEGIN_SRC emacs-lisp
@@ -20,7 +38,6 @@
       mac-command-modifier 'meta
       x-select-enable-clipboard t)
   #+END_SRC
-
 * File Browsing
   #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons-dired
@@ -72,22 +89,22 @@
     :bind (("C-M-f" . origami-toggle-node)))
    #+END_SRC
 ** Rainbow Delimiters
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
-#+END_SRC
+   #+END_SRC
 * Org
 ** Add the org elpa
    #+BEGIN_SRC emacs-lisp
    (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
    #+END_SRC
 ** Beautify org
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package org-superstar
   :ensure t
   :init
   (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
-#+END_SRC
+   #+END_SRC
 ** Babel
    #+BEGIN_SRC emacs-lisp
      (use-package ob-kotlin)
@@ -123,7 +140,7 @@
         (restclient . t)))
    #+END_SRC
 ** Workflow
-  #+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
     ;; Deft
     (use-package deft)
     ;; Take notes more effectively with org mode
@@ -164,10 +181,20 @@
 
     ;; Step6. Agenda view
     (global-set-key (kbd "C-c a") 'org-agenda)
-  #+END_SRC
+   #+END_SRC
 * Magit
   #+BEGIN_SRC emacs-lisp
   (use-package magit)
+  #+END_SRC
+* Projectile
+  #+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("s-p" . projectile-command-map)
+              ("C-c p" . projectile-command-map)))
   #+END_SRC
 * Undo
   #+BEGIN_SRC emacs-lisp
@@ -208,13 +235,13 @@
   #+END_SRC
 * Programming
 ** Yasnippet
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :config
   (yas-global-mode))
 
 (use-package yasnippet-snippets)
-#+END_SRC
+   #+END_SRC
 ** Flycheck
    #+BEGIN_SRC emacs-lisp
      (use-package flycheck
@@ -263,20 +290,62 @@
      (use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
    #+END_SRC
 ** C/C++
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
   (use-package company-c-headers
     :config
     (add-to-list 'company-backends 'company-c-headers))
-#+END_SRC
+   #+END_SRC
+** JavaScript
+*** RJSX mode
+    #+BEGIN_SRC emacs-lisp
+(use-package rjsx-mode
+  :ensure t
+  :mode "\\.js\\'")
+    #+END_SRC
+*** Tide
+    #+BEGIN_SRC emacs-lisp
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
+
+  (use-package tide
+    :ensure t
+    :after (rjsx-mode company flycheck)
+    :hook (rjsx-mode . setup-tide-mode))
+
+  ;; aligns annotation to the right hand side
+  (setq company-tooltip-align-annotations t)
+  ;; formats the buffer before saving
+  (add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+    #+END_SRC
+
+*** Prettier
+    #+BEGIN_SRC emacs-lisp
+(use-package prettier-js
+  :ensure t
+  :after (rjsx-mode)
+  :hook (rjsx-mode . prettier-js-mode)
+)
+    #+END_SRC    
 ** Web
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package web-beautify)
-#+END_SRC
+   #+END_SRC
 ** Restclient
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package restclient)
 (use-package ob-restclient)
-#+END_SRC
+   #+END_SRC
 * Terminal
   #+BEGIN_SRC emacs-lisp
     (use-package eshell-toggle
