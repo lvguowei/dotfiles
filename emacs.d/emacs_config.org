@@ -3,6 +3,7 @@
     ;; Fix some keyboard mapping problem
     (define-key key-translation-map [dead-grave] "`")
     (define-key key-translation-map [dead-acute] "'")
+    (define-key key-translation-map [dead-tilde] "~")
 
     (setq inhibit-startup-message t)
     (scroll-bar-mode -1)        ; Disable visible scrollbar
@@ -12,31 +13,6 @@
     (menu-bar-mode -1)          ; Disable the menu bar
     (setq visible-bell t)
     (defalias 'yes-or-no-p 'y-or-n-p)
-  #+END_SRC
-* Env
-  #+BEGIN_SRC emacs-lisp
-(defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match
-that used by the user's shell.
-
-This is particularly useful under Mac OS X and macOS, where GUI
-apps are not started from a shell."
-  (interactive)
-  (let ((path-from-shell (replace-regexp-in-string
-			  "[ \t\n]*$" "" (shell-command-to-string
-					  "$SHELL --login -c 'echo $PATH'"
-						    ))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-(set-exec-path-from-shell-PATH)
-  #+END_SRC
-* Mac tweaks
-
-  #+BEGIN_SRC emacs-lisp
-  (setq mac-option-modifier nil
-      mac-command-modifier 'meta
-      x-select-enable-clipboard t)
   #+END_SRC
 * File Browsing
   #+BEGIN_SRC emacs-lisp
@@ -89,22 +65,22 @@ apps are not started from a shell."
     :bind (("C-M-f" . origami-toggle-node)))
    #+END_SRC
 ** Rainbow Delimiters
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
-   #+END_SRC
+#+END_SRC
 * Org
 ** Add the org elpa
    #+BEGIN_SRC emacs-lisp
    (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
    #+END_SRC
 ** Beautify org
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package org-superstar
   :ensure t
   :init
   (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
-   #+END_SRC
+#+END_SRC
 ** Babel
    #+BEGIN_SRC emacs-lisp
      (use-package ob-kotlin)
@@ -139,8 +115,25 @@ apps are not started from a shell."
         (lisp . t)
         (restclient . t)))
    #+END_SRC
+** Org Roam
+#+BEGIN_SRC emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/Dropbox/org/roam-notes/")
+    (org-roam-completion-everywhere t)
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+           :map org-mode-map
+           ("C-M-i"    . completion-at-point))
+    :config
+    (org-roam-setup))
+#+END_SRC
 ** Workflow
-   #+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
     ;; Deft
     (use-package deft)
     ;; Take notes more effectively with org mode
@@ -181,36 +174,40 @@ apps are not started from a shell."
 
     ;; Step6. Agenda view
     (global-set-key (kbd "C-c a") 'org-agenda)
-   #+END_SRC
+  #+END_SRC
 * Magit
   #+BEGIN_SRC emacs-lisp
   (use-package magit)
-  #+END_SRC
-* Projectile
-  #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :ensure t
-  :init
-  (projectile-mode +1)
-  :bind (:map projectile-mode-map
-              ("s-p" . projectile-command-map)
-              ("C-c p" . projectile-command-map)))
-  #+END_SRC
+  #+END_SRClskdjflskjflskjflskdflsdkfsldkfjlkj
 * Undo
   #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
     :init
     (global-undo-tree-mode 1))
   #+END_SRC
+* Which-key
+  #+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :init
+    (which-key-mode)
+    :config
+    (which-key-setup-side-window-right-bottom)
+    (setq which-key-sort-order 'which-key-key-order-alpha
+      which-key-side-window-max-width 0.33
+      which-key-idle-delay 0.05)
+    :diminish which-key-mode)
+  (provide 'init-which-key)
+
+  #+END_SRC
 * Icons And Fonts
   #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :font "Source Code Pro" :height 140)
+    (set-face-attribute 'default nil :font "Source Code Pro" :height 180)
   #+END_SRC
 * Theme
   #+BEGIN_SRC emacs-lisp
-  (use-package doom-themes :defer t)
-  (load-theme 'doom-palenight t)
-  (doom-themes-visual-bell-config)
+    (use-package doom-themes :defer t)
+    (load-theme 'doom-city-lights t)
+    (doom-themes-visual-bell-config)
   #+END_SRC
 * Mode Line
   #+BEGIN_SRC emacs-lisp
@@ -234,14 +231,24 @@ apps are not started from a shell."
     :commands emojify-mode)
   #+END_SRC
 * Programming
-** Yasnippet
+** Treemacs
    #+BEGIN_SRC emacs-lisp
+     (use-package treemacs
+                   :defer t
+                   :init
+                   (setq treemacs-follow-after-init t
+                         treemacs-is-never-other-window nil
+                         treemacs-sorting 'alphabetic-case-insensitive-asc))
+     (use-package lsp-treemacs)
+   #+END_SRC
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :config
   (yas-global-mode))
 
 (use-package yasnippet-snippets)
-   #+END_SRC
+#+END_SRC
 ** Flycheck
    #+BEGIN_SRC emacs-lisp
      (use-package flycheck
@@ -277,6 +284,9 @@ apps are not started from a shell."
        :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
               (c-mode . lsp)
               (java-mode . lsp)
+              (clojure-mode . lsp)
+              (clojurescript-mode . lsp)
+              (clojurec-mode . lsp)
               ;; if you want which-key integration
               (lsp-mode . lsp-enable-which-key-integration))
        :commands lsp)
@@ -288,64 +298,65 @@ apps are not started from a shell."
      (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
      (use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
+     (use-package dap-mode :after lsp-mode :config (dap-auto-configure-mode))
+     (use-package dap-java :ensure nil)
    #+END_SRC
 ** C/C++
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
   (use-package company-c-headers
     :config
     (add-to-list 'company-backends 'company-c-headers))
-   #+END_SRC
-** JavaScript
-*** RJSX mode
-    #+BEGIN_SRC emacs-lisp
-(use-package rjsx-mode
-  :ensure t
-  :mode "\\.js\\'")
-    #+END_SRC
-*** Tide
-    #+BEGIN_SRC emacs-lisp
-  (defun setup-tide-mode ()
-    (interactive)
-    (tide-setup)
-    (flycheck-mode +1)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1)
-    ;; company is an optional dependency. You have to
-    ;; install it separately via package-install
-    ;; `M-x package-install [ret] company`
-    (company-mode +1))
-
-  (use-package tide
-    :ensure t
-    :after (rjsx-mode company flycheck)
-    :hook (rjsx-mode . setup-tide-mode))
-
-  ;; aligns annotation to the right hand side
-  (setq company-tooltip-align-annotations t)
-  ;; formats the buffer before saving
-  (add-hook 'before-save-hook 'tide-format-before-save)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-    #+END_SRC
-
-*** Prettier
-    #+BEGIN_SRC emacs-lisp
-(use-package prettier-js
-  :ensure t
-  :after (rjsx-mode)
-  :hook (rjsx-mode . prettier-js-mode)
-)
-    #+END_SRC    
+#+END_SRC
+** Kotlin
+#+BEGIN_SRC emacs-lisp
+  (use-package kotlin-mode)
+#+END_SRC   
 ** Web
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package web-beautify)
-   #+END_SRC
+#+END_SRC
 ** Restclient
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 (use-package restclient)
 (use-package ob-restclient)
+#+END_SRC
+** Projectile
+   #+BEGIN_SRC emacs-lisp
+     (use-package projectile)
    #+END_SRC
+** Lisp
+#+BEGIN_SRC emacs-lisp
+(use-package slime
+  :config
+  (setq inferior-lisp-program "clisp"))
+#+END_SRC
+** Clojure
+#+BEGIN_SRC emacs-lisp
+(use-package clojure-mode)
+(use-package cider)
+#+END_SRC
+** Smartparens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :diminish smartparens-mode
+    :init
+    (smartparens-global-mode)
+    :config
+    (require 'smartparens-config)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'smartparens-mode)
+    (add-hook 'clojure-mode-hook #'smartparens-strict-mode)
+    (custom-set-variables
+     '(sp-base-key-bindings 'sp)
+     '(sp-override-key-bindings
+       '(("C-S-<left>" . sp-backward-slurp-sexp)
+         ("C-S-<right>" . sp-backward-barf-sexp)
+         ("C-M-t" . sp-transpose-sexp)
+         ("C-S-k" . sp-kill-hybrid-sexp)
+         ("C-c C-<right>" . sp-slurp-hybrid-sexp)
+         ("C-(" . sp-rewrap-sexp)
+         ("C-M-<backspace>" . sp-splice-sexp-killing-around)
+         ("C-S-<backspace>" . nil)))))
+#+END_SRC
 * Terminal
   #+BEGIN_SRC emacs-lisp
     (use-package eshell-toggle
@@ -353,4 +364,14 @@ apps are not started from a shell."
       (eshell-toggle :repo "4DA/eshell-toggle" :fetcher github :version original)
       :bind
       ("C-x '" . eshell-toggle))
+  #+END_SRC
+* PDF
+  #+BEGIN_SRC emacs-lisp
+    (use-package pdf-tools
+      :config
+      (pdf-tools-install))
+  #+END_SRC
+* Tricks for video recording
+  #+BEGIN_SRC emacs-lisp
+    ;(setq-default mode-line-format nil)
   #+END_SRC
