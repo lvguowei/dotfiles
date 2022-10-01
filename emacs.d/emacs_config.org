@@ -15,21 +15,11 @@
   #+END_SRC
 * Env
   #+BEGIN_SRC emacs-lisp
-(defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match
-that used by the user's shell.
-
-This is particularly useful under Mac OS X and macOS, where GUI
-apps are not started from a shell."
-  (interactive)
-  (let ((path-from-shell (replace-regexp-in-string
-			  "[ \t\n]*$" "" (shell-command-to-string
-					  "$SHELL --login -c 'echo $PATH'"
-						    ))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-(set-exec-path-from-shell-PATH)
+    (use-package exec-path-from-shell
+      :init
+      (when (memq window-system '(mac ns x))
+        (exec-path-from-shell-initialize)))
+            
   #+END_SRC
 * Mac tweaks
 
@@ -141,46 +131,71 @@ apps are not started from a shell."
    #+END_SRC
 ** Workflow
    #+BEGIN_SRC emacs-lisp
-    ;; Deft
-    (use-package deft)
-    ;; Take notes more effectively with org mode
-    (setq org-log-into-drawer t)
+     ;; Deft
+     (use-package deft)
+     ;; Take notes more effectively with org mode
+     (setq org-log-into-drawer t)
 
-    ;; Step1. Set up a keyboard shorcut to go to the main org file
-    (global-set-key (kbd "C-c o")
-                    (lambda () (interactive) (find-file "/home/lvguowei/Dropbox/org/organizer.org")))
+     ;; Step1. Set up a keyboard shorcut to go to the main org file
+     (global-set-key (kbd "C-c o")
+                     (lambda () (interactive) (find-file "/home/lvguowei/Dropbox/org/organizer.org")))
 
-    ;; Step2. Use org-refile to file or jump to headings
-    (setq org-agenda-files '("~/Dropbox/org"))
-    (setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
-    (setq org-directory "~/Dropbox/org")
+     ;; Step2. Use org-refile to file or jump to headings
+     (setq org-agenda-files '("~/Dropbox/org"))
+     (setq org-refile-targets '((org-agenda-files . (:maxlevel . 6))))
+     (setq org-directory "~/Dropbox/org")
 
-    ;; Step3. Use org-capture
-    (setq org-default-notes-file "/home/lvguowei/Dropbox/org/organizer.org")
-    (define-key global-map "\C-cc" 'org-capture)
+     ;; Step3. Use org-capture
+     (setq org-default-notes-file "/home/lvguowei/Dropbox/org/organizer.org")
+     (define-key global-map "\C-cc" 'org-capture)
 
-    ;; Step4. Define your own org-capture-template
-    (setq org-capture-templates
-          (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
-                   "* TODO %?\n%U\n")
-                  ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
-                   "* %? %^g\n%U\n")
-                  ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
-                   "* TODO %?\n%U\n"))))
+     ;; Step4. Define your own org-capture-template
+     (setq org-capture-templates
+           (quote (("t" "Todo" entry (file+datetree "~/Dropbox/org/organizer.org")
+                    "* TODO %?\n%U\n")
+                   ("j" "Journal" entry (file "~/Dropbox/org/journal.org")
+                    "* %? %^g\n%U\n")
+                   ("w" "Work" entry (file+datetree "~/Dropbox/org/work.org")
+                    "* TODO %?\n%U\n"))))
 
-    '(org-clock-into-drawer "CLOCKING")
+     '(org-clock-into-drawer "CLOCKING")
 
-    ;; Step5. Use deft to quickly browse through the notes
-    (setq deft-directory "~/Dropbox/org")
-    (setq deft-extension "org")
-    (setq deft-text-mode 'org-mode)
-    (setq deft-use-filename-as-title t)
-    (setq deft-use-filter-string-for-filename t)
-    (setq deft-auto-save-interval 0)
-    (global-set-key (kbd "C-c d") 'deft)
+     ;; Step5. Use deft to quickly browse through the notes
+     (setq deft-directory "~/Dropbox/org")
+     (setq deft-extension "org")
+     (setq deft-text-mode 'org-mode)
+     (setq deft-use-filename-as-title t)
+     (setq deft-use-filter-string-for-filename t)
+     (setq deft-auto-save-interval 0)
+     (global-set-key (kbd "C-c d") 'deft)
 
-    ;; Step6. Agenda view
-    (global-set-key (kbd "C-c a") 'org-agenda)
+     ;; Step6. Agenda view
+     (global-set-key (kbd "C-c a") 'org-agenda)
+
+
+     (use-package org-roam
+       :ensure t
+       :init
+       (setq org-roam-v2-ack t)
+       :custom
+       (org-roam-directory "~/Dropbox/org/RoamNotes")
+       (org-roam-completion-everywhere t)
+       (org-roam-dailies-capture-templates
+        '(("d" "default" entry "* %<%I:%M %p>: %?"
+           :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+       :bind (("C-c n l" . org-roam-buffer-toggle)
+              ("C-c n f" . org-roam-node-find)
+              ("C-c n i" . org-roam-node-insert)
+              :map org-mode-map
+              ("C-M-i" . completion-at-point)
+              :map org-roam-dailies-map
+              ("Y" . org-roam-dailies-capture-yesterday)
+              ("T" . org-roam-dailies-capture-tomorrow))
+       :bind-keymap
+       ("C-c n d" . org-roam-dailies-map)
+       :config
+       (require 'org-roam-dailies) ;; Ensure the keymap is available
+       (org-roam-db-autosync-mode))
    #+END_SRC
 * Magit
   #+BEGIN_SRC emacs-lisp
@@ -198,9 +213,11 @@ apps are not started from a shell."
   #+END_SRC
 * Undo
   #+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :init
-    (global-undo-tree-mode 1))
+    (use-package undo-tree
+      :init
+      (global-undo-tree-mode 1)
+      :config
+      (setq undo-tree-auto-save-history nil))
   #+END_SRC
 * Icons And Fonts
   #+BEGIN_SRC emacs-lisp
