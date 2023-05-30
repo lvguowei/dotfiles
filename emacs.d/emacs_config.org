@@ -1,3 +1,27 @@
+* Better Defaults
+  #+BEGIN_SRC emacs-lisp
+    (recentf-mode 1)
+
+    ;; save what you enter into minibuffer prompts
+    (setq history-length 25)
+    (savehist-mode 1)
+
+    ;; remember and restore the last cursor location of opened files
+    (save-place-mode 1)
+
+    ;; Move customization variables to a separate file and load it
+    (setq custom-file (locate-user-emacs-file "custom-vars.el"))
+    (load custom-file 'noerror 'nomessage)
+
+    ;; Don't pop up UI dialogs when prompting
+    (setq use-dialog-box nil)
+
+    ;; Revert buffers when the underlying file has changed
+    (global-auto-revert-mode 1)
+
+    ;; Revert Dired and other buffers
+    (setq global-auto-revert-non-file-buffers t)
+  #+END_SRC
 * Interface Tweaks
   #+BEGIN_SRC emacs-lisp
     ;; Fix some keyboard mapping problem
@@ -30,9 +54,9 @@
   #+END_SRC
 * File Browsing
   #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons-dired
-    :init
-    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+  (use-package nerd-icons-dired
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
   #+END_SRC
 * Window Management
 ** Scaling
@@ -172,7 +196,6 @@
      ;; Step6. Agenda view
      (global-set-key (kbd "C-c a") 'org-agenda)
 
-
      (use-package org-roam
        :ensure t
        :init
@@ -221,7 +244,7 @@
   #+END_SRC
 * Icons And Fonts
   #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :font "Operator Mono" :height 190)
+    (set-face-attribute 'default nil :font "Victor Mono" :height 240 :weight 'light)
   #+END_SRC
 * Theme
   #+BEGIN_SRC emacs-lisp
@@ -231,9 +254,16 @@
   #+END_SRC
 * Mode Line
   #+BEGIN_SRC emacs-lisp
-;; You must run (all-the-icons-install-fonts) one time after installing this package!
-(use-package doom-modeline
-  :init (doom-modeline-mode 1))
+    ; M-x nerd-icons-install-fonts
+    (use-package nerd-icons
+      ;; :custom
+      ;; The Nerd Font you want to use in GUI
+      ;; "Symbols Nerd Font Mono" is the default and is recommended
+      ;; but you can use any other Nerd Font if you want
+      ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+      )
+    (use-package doom-modeline
+      :init (doom-modeline-mode 1))
   #+END_SRC
 * Completion
   #+BEGIN_SRC emacs-lisp
@@ -304,7 +334,6 @@
 
      (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-     (use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
    #+END_SRC
 ** C/C++
    #+BEGIN_SRC emacs-lisp
@@ -385,3 +414,31 @@
   #+END_SRC
 
   #+RESULTS:
+
+* Helm
+#+begin_src emacs-lisp
+(use-package helm
+  :bind ("M-x" . helm-M-x))
+#+end_src
+
+* Simple HTTPd
+#+begin_src emacs-lisp
+(use-package simple-httpd
+  :ensure t)
+#+end_src  
+
+#+RESULTS:
+
+* Video making
+#+begin_src emacs-lisp
+;  (use-package  hide-mode-line)
+;  (use-package  writeroom-mode)
+;  (use-package olivetti)
+;  (blink-cursor-mode 0)
+;  (setq-default cursor-type 'hbar) ; hbar
+;  (set-face-attribute 'default nil :font "Victoria Typewriter"  :height 300 :weight 'regular)
+;  (use-package smooth-scrolling)
+;  (global-hl-line-mode 1)
+#+end_src  
+
+
